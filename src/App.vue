@@ -2,6 +2,8 @@
 import { onMounted, onUnmounted, computed, ref } from 'vue';
 import { ElConfigProvider } from 'element-plus';
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs';
+import en from 'element-plus/dist/locale/en.mjs';
+import tr from 'element-plus/dist/locale/tr.mjs';
 import { useAccountsStore, useSettingsStore, useUIStore } from './store';
 import MainLayout from './views/MainLayout.vue';
 import WelcomeDialog from './components/WelcomeDialog.vue';
@@ -12,10 +14,23 @@ const accountsStore = useAccountsStore();
 const settingsStore = useSettingsStore();
 const uiStore = useUIStore();
 
-const showWelcomeDialog = ref(true);
+const showWelcomeDialog = ref(localStorage.getItem('hasSeenWelcome') !== 'true');
 
 // 事件监听取消函数
 let tokenRefreshedUnlisten: UnlistenFn | null = null;
+
+// Element Plus locale mapping
+const localeMap = {
+  'zh-CN': zhCn,
+  'en-US': en,
+  'tr-TR': tr,
+};
+
+// 根据设置选择 Element Plus locale
+const elementLocale = computed(() => {
+  const locale = settingsStore.settings.locale || 'zh-CN';
+  return localeMap[locale as keyof typeof localeMap] || zhCn;
+});
 
 // 用于Element Plus的命名空间，支持深色模式
 const elNamespace = computed(() => 'el');
@@ -135,7 +150,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <el-config-provider :locale="zhCn" :namespace="elNamespace">
+  <el-config-provider :locale="elementLocale" :namespace="elNamespace">
     <MainLayout />
     <WelcomeDialog v-model="showWelcomeDialog" />
   </el-config-provider>

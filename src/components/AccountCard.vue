@@ -17,7 +17,7 @@
         class="select-checkbox"
       />
       <div class="account-info">
-        <div class="email" :title="'点击复制: ' + account.email" @click.stop="copyEmail">{{ displayEmail }}</div>
+        <div class="email" :title="t.accountCard.clickToCopy + ': ' + account.email" @click.stop="copyEmail">{{ displayEmail }}</div>
         <el-tag 
           v-if="account.nickname"
           type="warning"
@@ -66,7 +66,7 @@
         <!-- 订阅到期时间（整合在配额区块内） -->
         <div class="quota-expiry" v-if="account.subscription_expires_at">
           <el-icon class="expiry-icon"><Clock /></el-icon>
-          <span class="expiry-label">到期时间:</span>
+          <span class="expiry-label">{{ t.accountCard.expiryDate }}</span>
           <span class="expiry-date">{{ formattedExpiryDate }}</span>
           <span v-if="daysUntilExpiry !== null" :class="['expiry-badge', expiryClass]">
             {{ expiryText }}
@@ -88,7 +88,7 @@
       
       <!-- 信息标签组 -->
       <div class="info-tags">
-        <el-tooltip v-if="account.group" content="分组" placement="top">
+        <el-tooltip v-if="account.group" :content="t.accountCard.group" placement="top">
           <el-tag 
             size="small"
             class="info-tag group-tag"
@@ -98,7 +98,7 @@
           </el-tag>
         </el-tooltip>
 
-        <el-tooltip v-if="account.created_at" content="创建时间" placement="top">
+        <el-tooltip v-if="account.created_at" :content="t.accountCard.createdTime" placement="top">
           <el-tag 
             size="small"
             class="info-tag create-tag"
@@ -124,7 +124,7 @@
     <div class="card-actions">
       <!-- 第一排按钮（6个） -->
       <div class="action-buttons">
-        <el-tooltip content="批量重置团队积分" placement="top">
+        <el-tooltip :content="t.accountCard.batchReset" placement="top">
           <el-button
             size="small"
             :icon="Refresh"
@@ -136,7 +136,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="查询账单" placement="top">
+        <el-tooltip :content="t.accountCard.billing" placement="top">
           <el-button 
             size="small" 
             :icon="Document"
@@ -146,7 +146,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="自动充值" placement="top">
+        <el-tooltip :content="t.accountCard.autoRefill" placement="top">
           <el-button
             size="small"
             :icon="Money"
@@ -157,7 +157,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="积分记录" placement="top">
+        <el-tooltip :content="t.accountCard.creditHistory" placement="top">
           <el-button 
             size="small" 
             :icon="TrendCharts"
@@ -177,7 +177,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="账号信息" placement="top">
+        <el-tooltip :content="t.accountCard.accountInfo" placement="top">
           <el-button 
             size="small" 
             :icon="User"
@@ -186,7 +186,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="删除用户(Windsurf)" placement="top">
+        <el-tooltip :content="t.accountCard.deleteUser" placement="top">
           <el-button
             size="small"
             :icon="UserFilled"
@@ -198,7 +198,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="删除" placement="top">
+        <el-tooltip :content="t.accountCard.delete" placement="top">
           <el-button
             size="small"
             :icon="Delete"
@@ -212,7 +212,7 @@
       
       <!-- 第二排按钮（5个） -->
       <div class="action-buttons">
-        <el-tooltip content="编辑" placement="top">
+        <el-tooltip :content="t.accountCard.edit" placement="top">
           <el-button 
             size="small" 
             :icon="Edit"
@@ -221,7 +221,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="重新登录" placement="top">
+        <el-tooltip :content="t.accountCard.relogin" placement="top">
           <el-button 
             size="small" 
             :icon="Key"
@@ -230,7 +230,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="使用分析" placement="top">
+        <el-tooltip :content="t.accountCard.analytics" placement="top">
           <el-button
             size="small"
             :icon="DataAnalysis"
@@ -239,7 +239,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="团队设置" placement="top">
+        <el-tooltip :content="t.accountCard.teamSettings" placement="top">
           <el-button
             size="small"
             :icon="Setting"
@@ -248,7 +248,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="团队管理" placement="top">
+        <el-tooltip :content="t.accountCard.teamManagement" placement="top">
           <el-button
             size="small"
             :icon="UserFilled"
@@ -259,7 +259,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="更换订阅" placement="top">
+        <el-tooltip :content="t.accountCard.changePlan" placement="top">
           <el-button
             size="small"
             :icon="Sell"
@@ -269,7 +269,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="获取试用链接" placement="top">
+        <el-tooltip :content="t.accountCard.getTrialLink" placement="top">
           <el-button
             size="small"
             :icon="Link"
@@ -279,7 +279,7 @@
           />
         </el-tooltip>
 
-        <el-tooltip content="一键切号" placement="top">
+        <el-tooltip :content="t.accountCard.oneClickSwitch" placement="top">
           <el-button
             size="small"
             :icon="Switch"
@@ -386,6 +386,7 @@ import UpdatePlanDialog from '@/components/UpdatePlanDialog.vue';
 import TurnstileDialog from '@/components/TurnstileDialog.vue';
 import dayjs from 'dayjs';
 import { maskEmail } from '@/utils/privacy';
+import { useI18n } from '@/composables/useI18n';
 
 const props = defineProps<{
   account: Account;
@@ -401,6 +402,7 @@ const emit = defineEmits<{
 const accountsStore = useAccountsStore();
 const uiStore = useUIStore();
 const settingsStore = useSettingsStore();
+const { t } = useI18n();
 
 // 是否为当前激活账号
 const isCurrent = computed(() => {
@@ -577,12 +579,12 @@ const statusClass = computed(() => {
 
 const statusText = computed(() => {
   // 只有付费计划且 subscription_active 为 false 时才显示未激活
-  if (isPaidPlan.value && props.account.subscription_active === false) return '未激活';
+  if (isPaidPlan.value && props.account.subscription_active === false) return t.value.accountCard.inactive;
   // 检查账户禁用状态
-  if (props.account.is_disabled) return '已禁用';
-  if (props.account.status === 'active') return '正常';
-  if (props.account.status === 'inactive') return '离线';
-  return '错误';
+  if (props.account.is_disabled) return t.value.accountCard.disabled;
+  if (props.account.status === 'active') return t.value.accountCard.normal;
+  if (props.account.status === 'inactive') return t.value.accountCard.offline;
+  return t.value.accountCard.error;
 });
 
 // 配额百分比
@@ -602,10 +604,10 @@ const quotaColor = computed(() => {
 // 刷新按钮提示文本
 const refreshButtonTooltip = computed(() => {
   if (!props.account.token_expires_at) {
-    return '刷新Token';
+    return t.value.accountCard.refreshToken;
   }
   const isExpired = dayjs(props.account.token_expires_at).isBefore(dayjs());
-  return isExpired ? '刷新Token（已过期）' : '刷新账号信息（Token有效）';
+  return isExpired ? t.value.accountCard.refreshTokenExpired : t.value.accountCard.refreshAccount;
 });
 
 // 订阅到期日期格式化
@@ -626,11 +628,11 @@ const daysUntilExpiry = computed(() => {
 const expiryText = computed(() => {
   const days = daysUntilExpiry.value;
   if (days === null) return '';
-  if (days < 0) return '已过期';
-  if (days === 0) return '今天到期';
-  if (days === 1) return '明天到期';
-  if (days <= 7) return `${days}天后到期`;
-  return `剩余${days}天`;
+  if (days < 0) return t.value.accountCard.expired;
+  if (days === 0) return t.value.accountCard.expiresToday;
+  if (days === 1) return t.value.accountCard.expiresTomorrow;
+  if (days <= 7) return t.value.accountCard.expiresInDays.replace('{days}', String(days));
+  return t.value.accountCard.remainingDays.replace('{days}', String(days));
 });
 
 // 到期样式类
@@ -658,20 +660,20 @@ const tokenExpiryType = computed(() => {
 
 // Token过期提示
 const tokenExpiryTooltip = computed(() => {
-  if (!props.account.token_expires_at) return '无Token';
+  if (!props.account.token_expires_at) return t.value.accountCard.noToken;
   const expiry = dayjs(props.account.token_expires_at);
   const now = dayjs();
   const minutesUntilExpiry = expiry.diff(now, 'minutes');
   const hoursUntilExpiry = expiry.diff(now, 'hours');
   const daysUntilExpiry = expiry.diff(now, 'days');
   
-  if (minutesUntilExpiry < 0) return '已过期';
-  if (minutesUntilExpiry === 0) return '即将过期（不足1分钟）';
-  if (minutesUntilExpiry < 5) return `即将过期（${minutesUntilExpiry}分钟后）`;
-  if (minutesUntilExpiry < 60) return `将在${minutesUntilExpiry}分钟后过期`;
-  if (hoursUntilExpiry < 24) return `将在${hoursUntilExpiry}小时后过期`;
-  if (daysUntilExpiry <= 7) return `${daysUntilExpiry}天后过期`;
-  return `有效（${daysUntilExpiry}天）`;
+  if (minutesUntilExpiry < 0) return t.value.accountCard.expired;
+  if (minutesUntilExpiry === 0) return t.value.accountCard.expiringSoonMin;
+  if (minutesUntilExpiry < 5) return t.value.accountCard.expiringSoonMins.replace('{min}', String(minutesUntilExpiry));
+  if (minutesUntilExpiry < 60) return t.value.accountCard.expiresInMins.replace('{min}', String(minutesUntilExpiry));
+  if (hoursUntilExpiry < 24) return t.value.accountCard.expiresInHours.replace('{hours}', String(hoursUntilExpiry));
+  if (daysUntilExpiry <= 7) return t.value.accountCard.expiresInDaysToken.replace('{days}', String(daysUntilExpiry));
+  return t.value.accountCard.validDays.replace('{days}', String(daysUntilExpiry));
 });
 
 function formatDate(date: string) {
@@ -704,9 +706,9 @@ function handleCardClick(event: MouseEvent) {
 async function copyEmail() {
   try {
     await navigator.clipboard.writeText(props.account.email);
-    ElMessage.success('邮箱已复制');
+    ElMessage.success(t.value.accountCard.emailCopied);
   } catch (error) {
-    ElMessage.error('复制失败');
+    ElMessage.error(t.value.accountCard.copyFailed);
   }
 }
 
@@ -745,10 +747,10 @@ async function handleRefreshToken() {
       const result = await apiService.refreshToken(props.account.id);
       if (result.success) {
         // 显示更详细的成功消息
-        const message = result.message || 'Token刷新成功';
-        if (result.old_expires_at && result.old_expires_at !== '未知') {
+        const message = result.message || t.value.accountCard.tokenRefreshSuccess;
+        if (result.old_expires_at && result.old_expires_at !== '未知' && result.old_expires_at !== t.value.accountCard.unknown) {
           ElMessage.success({
-            message: `${message}\n旧过期时间: ${new Date(result.old_expires_at).toLocaleString()}\n新过期时间: ${result.expires_at ? new Date(result.expires_at).toLocaleString() : '未知'}`,
+            message: `${message}\n${t.value.accountCard.oldExpiry}: ${new Date(result.old_expires_at).toLocaleString()}\n${t.value.accountCard.newExpiry}: ${result.expires_at ? new Date(result.expires_at).toLocaleString() : t.value.accountCard.unknown}`,
             duration: 3000,
             showClose: true
           });
@@ -1041,18 +1043,18 @@ async function handleBatchResetTeamCredits() {
     }
     
     if (otherMembers.length === 0) {
-      ElMessage.warning('没有可重置的团队成员');
+      ElMessage.warning(t.value.accountCard.noMembersToReset);
       return;
     }
     
     // 确认操作
     try {
       await ElMessageBox.confirm(
-        `确定要重置 ${otherMembers.length} 位团队成员的积分吗？\n此操作将移除并重新邀请这些成员。`,
-        '批量重置团队积分',
+        t.value.accountCard.batchResetConfirmContent.replace('{count}', String(otherMembers.length)),
+        t.value.accountCard.batchResetConfirmTitle,
         {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
+          confirmButtonText: t.value.accountCard.confirm,
+          cancelButtonText: t.value.accountCard.cancel,
           type: 'warning'
         }
       );
@@ -1116,15 +1118,15 @@ async function handleBatchResetTeamCredits() {
     
     // 显示结果
     if (failCount === 0) {
-      ElMessage.success(`成功重置 ${successCount} 位团队成员的积分`);
+      ElMessage.success(t.value.accountCard.resetSuccess.replace('{count}', String(successCount)));
     } else {
-      ElMessage.warning(`重置完成：成功 ${successCount} 位，失败 ${failCount} 位`);
+      ElMessage.warning(t.value.accountCard.resetPartialSuccess.replace('{success}', String(successCount)).replace('{fail}', String(failCount)));
     }
     
     // 刷新账户信息
     accountsStore.refreshAccountToken(props.account);
   } catch (error: any) {
-    ElMessage.error('批量重置团队积分失败: ' + error.toString());
+    ElMessage.error(t.value.accountCard.resetFailed.replace('{error}', error.toString()));
   } finally {
     isResettingCredits.value = false;
   }
@@ -1266,7 +1268,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
         // 复制链接到剪贴板
         try {
           await navigator.clipboard.writeText(result.stripe_url);
-          ElMessage.success('Stripe支付链接已复制到剪贴板');
+          ElMessage.success(t.value.accountCard.stripeLinkCopied);
 
           // 获取设置
           const autoOpen = settingsStore.settings?.autoOpenBrowser ?? true;
@@ -1279,7 +1281,7 @@ async function handleTurnstileSuccess(turnstileToken: string) {
             // 自动打开浏览器
             try {
               await invoke(openCommand, { url: result.stripe_url });
-              ElMessage.success(`已在浏览器${modeText}中打开`);
+              ElMessage.success(t.value.accountCard.openedInBrowser.replace('{mode}', modeText));
             } catch (err) {
               ElMessage.error('打开浏览器失败，请手动打开链接');
               console.error('打开链接失败:', err);
@@ -1297,9 +1299,9 @@ async function handleTurnstileSuccess(turnstileToken: string) {
             ).then(async () => {
               try {
                 await invoke(openCommand, { url: result.stripe_url });
-                ElMessage.success(`已在浏览器${modeText}中打开`);
+                ElMessage.success(t.value.accountCard.openedInBrowser.replace('{mode}', modeText));
               } catch (err) {
-                ElMessage.error('打开浏览器失败，请手动打开链接');
+                ElMessage.error(t.value.accountCard.openBrowserFailed);
                 console.error('打开链接失败:', err);
               }
             }).catch(() => {
@@ -1344,17 +1346,17 @@ async function handleTurnstileSuccess(turnstileToken: string) {
 async function handleDelete() {
   try {
     await ElMessageBox.confirm(
-      `确定要删除账号 ${props.account.nickname} (${props.account.email}) 吗？`,
-      '删除确认',
+      t.value.accountCard.deleteConfirmContent.replace('{nickname}', props.account.nickname || '').replace('{email}', props.account.email),
+      t.value.accountCard.deleteConfirmTitle,
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.accountCard.delete,
+        cancelButtonText: t.value.accountCard.cancel,
         type: 'warning',
       }
     );
     
     await accountsStore.deleteAccount(props.account.id);
-    ElMessage.success('账号删除成功');
+    ElMessage.success(t.value.accountCard.deleteSuccess);
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error(`删除失败: ${error}`);
@@ -1365,11 +1367,11 @@ async function handleDelete() {
 async function handleDeleteWindsurfUser() {
   try {
     await ElMessageBox.confirm(
-      `确定要删除 Windsurf 用户 ${props.account.email} 吗？\n\n⚠️ 此操作将从 Windsurf 服务器上删除该用户账号！`,
-      '删除 Windsurf 用户',
+      t.value.accountCard.deleteWindsurfUserContent.replace('{email}', props.account.email),
+      t.value.accountCard.deleteWindsurfUserTitle,
       {
-        confirmButtonText: '确定删除',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.accountCard.delete, // Use delete as verb
+        cancelButtonText: t.value.accountCard.cancel,
         type: 'error',
       }
     );
@@ -1378,9 +1380,9 @@ async function handleDeleteWindsurfUser() {
     const result = await invoke('delete_windsurf_user', { id: props.account.id }) as any;
     
     if (result.success) {
-      ElMessage.success('Windsurf 用户已删除');
+      ElMessage.success(t.value.accountCard.windsurfUserDeleted);
     } else {
-      ElMessage.error(result.error || '删除失败');
+      ElMessage.error(result.error || t.value.accountCard.operFailed);
     }
   } catch (error) {
     if (error !== 'cancel') {
@@ -1395,11 +1397,11 @@ async function handleSwitchAccount() {
   isSwitching.value = true;
   try {
     await ElMessageBox.confirm(
-      `确定要切换到账号 ${props.account.nickname || props.account.email} 吗？\n\n此操作将：\n• 使用回调URL自动登录Windsurf\n• 无需重启软件\n• 保持当前工作状态`,
-      '切换账号确认',
+      t.value.accountCard.switchConfirmContent.replace('{nickname}', props.account.nickname || props.account.email),
+      t.value.accountCard.switchConfirmTitle,
       {
-        confirmButtonText: '确定切换',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.accountCard.confirm,
+        cancelButtonText: t.value.accountCard.cancel,
         type: 'warning',
       }
     );
@@ -1410,7 +1412,7 @@ async function handleSwitchAccount() {
     if (result.success) {
       // 显示成功消息
       ElMessage.success({
-        message: result.message || '已成功切换账号',
+        message: result.message || t.value.accountCard.switchSuccess,
         duration: 5000,
         showClose: true
       });
@@ -1418,7 +1420,7 @@ async function handleSwitchAccount() {
       // 根据机器ID重置状态显示不同提示
       if (result.machine_id_reset === false) {
         ElMessage.warning({
-          message: '提示：机器ID未重置（可能需要管理员权限），但账号切换已成功',
+          message: t.value.accountCard.machineIdNotReset,
           duration: 6000,
           showClose: true
         });
@@ -1427,7 +1429,7 @@ async function handleSwitchAccount() {
       // 如果返回了auth_token，显示额外信息
       if (result.auth_token) {
         ElMessage.info({
-          message: '如果Windsurf未自动登录，请确保Windsurf已打开',
+          message: t.value.accountCard.checkWindsurfOpen,
           duration: 5000,
           showClose: true
         });
@@ -1441,7 +1443,7 @@ async function handleSwitchAccount() {
       };
       emit('update', updatedAccount);
     } else {
-      ElMessage.error(result.error || '切换账号失败');
+      ElMessage.error(result.error || t.value.accountCard.switchFailed);
     }
   } catch (error) {
     if (error !== 'cancel') {

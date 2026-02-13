@@ -46,7 +46,7 @@ export interface PaginationConfig {
 /**
  * 排序字段枚举
  */
-export type SortField = 
+export type SortField =
   | 'email'               // 邮箱/账户名称
   | 'created_at'          // 创建时间
   | 'used_quota'          // 已用积分
@@ -299,6 +299,7 @@ export interface Settings {
   seat_count_options: number[];
   retry_times: number;
   theme: string;
+  locale?: string;  // 语言设置: 'zh-CN' | 'en-US' | 'tr-TR'
   concurrent_limit: number;
   show_seats_result_dialog: boolean;  // 是否显示座位更新结果对话框
   autoOpenPaymentLinkInWebview?: boolean;  // 是否自动在内置浏览器中打开支付链接
@@ -347,7 +348,7 @@ export interface OperationLog {
   details?: any;
 }
 
-export type OperationType = 
+export type OperationType =
   | 'login'
   | 'refresh_token'
   | 'reset_credits'

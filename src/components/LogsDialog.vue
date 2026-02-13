@@ -1,27 +1,27 @@
 <template>
   <el-dialog
-    v-model="uiStore.showLogsDialog"
-    title="操作日志"
+    v-model="visible"
+    :title="t.menu.logs"
     width="800px"
   >
     <div class="logs-container">
       <div class="logs-header">
         <el-button size="small" @click="loadLogs" :icon="Refresh">
-          刷新
+          {{ t.common.refresh }}
         </el-button>
         <el-button size="small" @click="clearLogs" :icon="Delete">
-          清空日志
+          {{ t.logs.clearLogs }}
         </el-button>
       </div>
       
       <el-table :data="logs" style="width: 100%" max-height="400">
-        <el-table-column prop="timestamp" label="时间" width="180">
+        <el-table-column prop="timestamp" :label="t.common.time" width="180">
           <template #default="{ row }">
             {{ formatDate(row.timestamp) }}
           </template>
         </el-table-column>
         
-        <el-table-column prop="operation_type" label="操作类型" width="120">
+        <el-table-column prop="operation_type" :label="t.logs.operationType" width="120">
           <template #default="{ row }">
             <el-tag :type="getOperationTypeTag(row.operation_type)">
               {{ formatOperationType(row.operation_type) }}
@@ -29,14 +29,14 @@
           </template>
         </el-table-column>
         
-        <el-table-column prop="account_email" label="账号" width="180" />
+        <el-table-column prop="account_email" :label="t.accounts.email" width="180" />
         
-        <el-table-column prop="message" label="消息" />
+        <el-table-column prop="message" :label="t.logs.message" />
         
-        <el-table-column prop="status" label="状态" width="80">
+        <el-table-column prop="status" :label="t.common.status" width="80">
           <template #default="{ row }">
             <el-tag :type="row.status === 'success' ? 'success' : 'danger'">
-              {{ row.status === 'success' ? '成功' : '失败' }}
+              {{ row.status === 'success' ? t.common.success : t.logs.failed }}
             </el-tag>
           </template>
         </el-table-column>
@@ -49,11 +49,16 @@
 import { onMounted, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Refresh, Delete } from '@element-plus/icons-vue';
-import { useSettingsStore, useUIStore } from '@/store';
+import { useSettingsStore } from '@/store';
+import { useI18n } from '@/composables/useI18n';
 import dayjs from 'dayjs';
 
 const settingsStore = useSettingsStore();
-const uiStore = useUIStore();
+const { t } = useI18n();
+const visible = computed({
+  get: () => settingsStore.loading || false,
+  set: () => {}
+});
 
 const logs = computed(() => {
   // 按时间倒序排列，最新的在前面

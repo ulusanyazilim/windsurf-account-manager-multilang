@@ -14,12 +14,28 @@
         <div class="circle circle-2"></div>
       </div>
       
+      <!-- 语言选择器 -->
+      <div class="language-selector">
+        <el-select 
+          v-model="currentLocale" 
+          size="small"
+          style="width: 150px"
+        >
+          <el-option
+            v-for="option in localeOptions"
+            :key="option.value"
+            :label="option.label"
+            :value="option.value"
+          />
+        </el-select>
+      </div>
+
       <!-- 警告图标 -->
       <div class="warning-section">
         <div class="warning-icon">
           <el-icon :size="48"><WarningFilled /></el-icon>
         </div>
-        <h2 class="warning-title">重要提醒</h2>
+        <h2 class="warning-title">{{ t.welcome.title }}</h2>
       </div>
 
       <!-- 免费声明 -->
@@ -29,8 +45,8 @@
             <el-icon :size="24"><InfoFilled /></el-icon>
           </div>
           <div class="notice-content">
-            <p class="notice-main">本软件为 <span class="highlight">完全免费</span> 的开源软件</p>
-            <p class="notice-sub">如果你是花钱购买的，那么 <span class="warning-text">你被骗了！</span></p>
+            <p class="notice-main">{{ t.welcome.freeNotice }} <span class="highlight">{{ t.welcome.freeHighlight }}</span> {{ t.welcome.freeNotice2 }}</p>
+            <p class="notice-sub">{{ t.welcome.scamWarning }} <span class="warning-text">{{ t.welcome.scamWarningHighlight }}</span></p>
           </div>
         </div>
       </div>
@@ -39,15 +55,15 @@
       <div class="tips-section">
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>本软件仅供学习交流使用</span>
+          <span>{{ t.welcome.tip1 }}</span>
         </div>
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>请勿用于任何商业用途</span>
+          <span>{{ t.welcome.tip2 }}</span>
         </div>
         <div class="tip-item">
           <el-icon class="tip-icon"><CircleCheck /></el-icon>
-          <span>禁止倒卖，发现必究</span>
+          <span>{{ t.welcome.tip3 }}</span>
         </div>
       </div>
 
@@ -55,11 +71,11 @@
       <div class="group-section">
         <h3 class="section-title">
           <el-icon><ChatDotRound /></el-icon>
-          <span>加入交流群</span>
+          <span>{{ t.welcome.joinGroup }}</span>
         </h3>
         <div class="qr-container">
           <img src="/交流群.png" alt="交流群二维码" class="qr-image" />
-          <p class="qr-tip">微信扫码加入交流群</p>
+          <p class="qr-tip">{{ t.welcome.qrTip }}</p>
         </div>
       </div>
 
@@ -67,7 +83,7 @@
       <div class="action-section">
         <el-button type="primary" size="large" @click="handleConfirm" class="confirm-btn">
           <el-icon><Select /></el-icon>
-          <span>我已知晓</span>
+          <span>{{ t.welcome.understood }}</span>
         </el-button>
       </div>
     </div>
@@ -75,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { 
   WarningFilled,
   InfoFilled,
@@ -83,6 +99,10 @@ import {
   ChatDotRound,
   Select
 } from '@element-plus/icons-vue';
+import { messages, localeNames, type Locale } from '@/locales';
+import { useSettingsStore } from '@/store';
+
+const settingsStore = useSettingsStore();
 
 const props = defineProps<{
   modelValue: boolean;
@@ -97,7 +117,36 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val)
 });
 
+// 当前语言 - 使用 ref 确保立即响应
+const currentLocale = ref<Locale>((settingsStore.settings.locale as Locale) || 'zh-CN');
+
+// 监听 locale 变化并更新 store
+watch(currentLocale, async (newLocale) => {
+  console.log('Language changed to:', newLocale);
+  try {
+    await settingsStore.updateSettings({
+      ...settingsStore.settings,
+      locale: newLocale
+    });
+    console.log('Settings updated successfully');
+  } catch (error) {
+    console.error('Failed to update settings:', error);
+  }
+});
+
+// 当前语言的翻译 - 直接从 messages 获取，确保响应式
+const t = computed(() => {
+  console.log('Computing translations for locale:', currentLocale.value);
+  return messages[currentLocale.value];
+});
+
+// 语言选项
+const localeOptions = computed(() => 
+  Object.entries(localeNames).map(([value, label]) => ({ value, label }))
+);
+
 function handleConfirm() {
+  localStorage.setItem('hasSeenWelcome', 'true');
   emit('update:modelValue', false);
 }
 
@@ -152,6 +201,25 @@ function handleClosed() {
   height: 150px;
   bottom: -75px;
   left: -75px;
+}
+
+/* 语言选择器 */
+.language-selector {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.language-selector :deep(.el-select) {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+}
+
+.language-selector :deep(.el-input__wrapper) {
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 /* 警告区域 */

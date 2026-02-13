@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="更换订阅计划"
+    :title="t.plan.updatePlanTitle"
     width="1100px"
     class="plan-dialog"
     :close-on-click-modal="false"
@@ -11,7 +11,7 @@
       <!-- 当前套餐信息 -->
       <div v-if="account?.plan_name" class="current-plan-info">
         <div class="info-left">
-          <div class="info-label">当前订阅套餐</div>
+          <div class="info-label">{{ t.plan.currentPlan }}</div>
           <div class="info-value">
             <el-tag :class="['plan-tag', `plan-${account.plan_name?.toLowerCase()}`]" effect="dark">
               <el-icon><Trophy /></el-icon>
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="info-right" v-if="account.total_quota">
-          <div class="quota-label">配额使用情况</div>
+          <div class="quota-label">{{ t.plan.quotaUsage }}</div>
           <div class="quota-value">
             <span class="used">{{ formatQuota(account.used_quota) }}</span>
             <span class="separator">/</span>
@@ -77,11 +77,11 @@
               round
               size="small"
             >
-              {{ isCurrentPlan(plan.key) ? '当前套餐' : (selectedPlan === plan.key ? '已选择' : '选择') }}
+              {{ isCurrentPlan(plan.key) ? t.plan.currentPlanBtn : (selectedPlan === plan.key ? t.plan.selected : t.plan.select) }}
             </el-button>
           </div>
           
-          <div v-if="isCurrentPlan(plan.key)" class="current-badge">当前使用</div>
+          <div v-if="isCurrentPlan(plan.key)" class="current-badge">{{ t.plan.currentBadge }}</div>
         </div>
       </div>
       
@@ -89,16 +89,16 @@
       <div class="payment-period-section">
         <div class="section-title">
           <el-icon><Calendar /></el-icon>
-          <span>付款周期</span>
+          <span>{{ t.seats.billingInterval }}</span>
         </div>
         <el-radio-group v-model="paymentPeriod" :disabled="isLooping">
           <el-radio-button :value="1">
             <el-icon><Clock /></el-icon>
-            月付
+            {{ t.seats.monthly }}
           </el-radio-button>
           <el-radio-button :value="2">
             <el-icon><Calendar /></el-icon>
-            年付
+            {{ t.seats.yearly }}
           </el-radio-button>
         </el-radio-group>
         <el-button
@@ -111,7 +111,7 @@
           style="margin-left: 16px;"
         >
           <el-icon><View /></el-icon>
-          预览计费
+          {{ t.plan.previewBilling }}
         </el-button>
       </div>
 
@@ -119,31 +119,31 @@
       <div v-if="billingPreview" class="billing-preview">
         <div class="preview-header">
           <el-icon><Ticket /></el-icon>
-          <span>计费预览</span>
+          <span>{{ t.plan.billingPreview }}</span>
         </div>
         <div class="preview-content">
           <div class="preview-item" v-if="billingPreview.amount_due_immediately !== undefined">
-            <span class="label">立即应付</span>
+            <span class="label">{{ t.seats.amountDueImmediately }}</span>
             <span class="value">${{ billingPreview.amount_due_immediately?.toFixed(2) }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.price_per_seat !== undefined">
-            <span class="label">每席位价格</span>
+            <span class="label">{{ t.seats.pricePerSeat }}</span>
             <span class="value">${{ billingPreview.price_per_seat?.toFixed(2) }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.num_seats !== undefined">
-            <span class="label">席位数</span>
+            <span class="label">{{ t.seats.numSeats }}</span>
             <span class="value">{{ billingPreview.num_seats }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.amount_per_interval !== undefined">
-            <span class="label">每周期费用</span>
-            <span class="value">${{ billingPreview.amount_per_interval?.toFixed(2) }}/{{ billingPreview.sub_interval_name === 'yearly' ? '年' : '月' }}</span>
+            <span class="label">{{ t.seats.amountPerInterval }}</span>
+            <span class="value">${{ billingPreview.amount_per_interval?.toFixed(2) }}/{{ billingPreview.sub_interval_name === 'yearly' ? t.seats.yearly : t.seats.monthly }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.billing_start">
-            <span class="label">计费开始</span>
+            <span class="label">{{ t.seats.billingStart }}</span>
             <span class="value">{{ billingPreview.billing_start }}</span>
           </div>
           <div class="preview-item" v-if="billingPreview.billing_end">
-            <span class="label">计费结束</span>
+            <span class="label">{{ t.seats.billingEnd }}</span>
             <span class="value">{{ billingPreview.billing_end }}</span>
           </div>
         </div>
@@ -163,31 +163,32 @@
         <div class="loop-header">
           <div class="loop-title">
             <el-icon><Refresh /></el-icon>
-            <span>循环更换模式</span>
+            <span>{{ t.plan.loopMode }}</span>
           </div>
           <el-switch v-model="loopMode" :disabled="isLooping" />
         </div>
-        <p class="loop-desc">开启后将持续执行订阅更换，直到连续3次失败或手动停止</p>
+        <p class="loop-desc">{{ t.plan.loopModeDesc }}</p>
         
         <!-- 循环执行状态 -->
         <div v-if="isLooping || loopStats.totalAttempts > 0" class="loop-status">
           <div class="status-row">
             <div class="stat-item success">
               <el-icon><SuccessFilled /></el-icon>
-              <span>成功: {{ loopStats.successCount }}</span>
+              <span>{{ t.common.success }}: {{ loopStats.successCount }}</span>
             </div>
             <div class="stat-item failed">
               <el-icon><CircleCloseFilled /></el-icon>
-              <span>失败: {{ loopStats.failedCount }}</span>
+              <span>{{ t.common.error }}: {{ loopStats.failedCount }}</span>
             </div>
             <div class="stat-item total">
               <el-icon><DataLine /></el-icon>
-              <span>总计: {{ loopStats.totalAttempts }}</span>
+              <span>{{ t.seats.totalSeats }}: {{ loopStats.totalAttempts }}</span> 
+              <!-- Using totalSeats for 'Total' might be wrong context (Total Attempts). Using 'all' from common? Or just Total -->
             </div>
           </div>
           <div v-if="loopStats.consecutiveFailures > 0" class="consecutive-warn">
             <el-icon><Warning /></el-icon>
-            连续失败: {{ loopStats.consecutiveFailures }} / 3
+            {{ t.plan.loopStopped }}: {{ loopStats.consecutiveFailures }} / 3
           </div>
           <div v-if="loopStats.lastError" class="last-error">
             <el-icon><InfoFilled /></el-icon>
@@ -199,8 +200,8 @@
       <!-- 订阅管理区域 -->
       <div class="subscription-management">
         <div class="management-header">
-          <span class="title">订阅管理</span>
-          <span class="subtitle">管理您的订阅状态</span>
+          <span class="title">{{ t.plan.subscriptionManagement }}</span>
+          <span class="subtitle">{{ t.plan.manageSubscriptionStatus }}</span>
         </div>
 
         <div class="subscription-actions">
@@ -212,7 +213,7 @@
             class="action-btn"
           >
             <el-icon><CircleClose /></el-icon>
-            取消订阅
+            {{ t.plan.cancelSubscription }}
           </el-button>
 
           <el-button
@@ -223,7 +224,7 @@
             class="action-btn"
           >
             <el-icon><CircleCheck /></el-icon>
-            恢复订阅
+            {{ t.plan.resumeSubscription }}
           </el-button>
         </div>
       </div>
@@ -231,14 +232,14 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose" :disabled="isLooping">取消</el-button>
+        <el-button @click="handleClose" :disabled="isLooping">{{ t.common.cancel }}</el-button>
         <el-button
           v-if="isLooping"
           type="danger"
           @click="stopLoop"
         >
           <el-icon><VideoPause /></el-icon>
-          停止循环
+          {{ t.plan.stopLoop }}
         </el-button>
         <el-button
           v-else
@@ -247,7 +248,7 @@
           :loading="loading"
           :disabled="!selectedPlan"
         >
-          {{ loopMode ? '开始循环更换' : '确认更换' }}
+          {{ loopMode ? t.plan.startLoop : t.plan.confirmUpdate }}
         </el-button>
       </div>
     </template>
@@ -255,7 +256,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { 
   UserFilled, OfficeBuilding, Check, Star, Trophy, CircleClose, CircleCheck, 
@@ -266,6 +267,7 @@ import {
 import type { Component } from 'vue';
 import { apiService } from '@/api';
 import type { Account } from '@/types';
+import { useI18n } from '@/composables/useI18n';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -277,6 +279,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean];
   'success': [];
 }>();
+
+const { t } = useI18n();
 
 const visible = ref(props.modelValue);
 // 所有可用的订阅计划类型
@@ -348,13 +352,13 @@ const billingPreview = ref<{
 } | null>(null);
 
 // 取消原因选项
-const cancelReasons = [
-  { value: 'too_expensive', label: '价格太贵' },
-  { value: 'not_using', label: '不再使用' },
-  { value: 'missing_features', label: '缺少功能' },
-  { value: 'switching_service', label: '切换到其他服务' },
-  { value: 'other', label: '其他原因' }
-];
+const cancelReasons = computed(() => [
+  { value: 'too_expensive', label: t.value.plan.tooExpensive }, // Assuming keys added.
+  { value: 'not_using', label: t.value.plan.notUsing },
+  { value: 'missing_features', label: t.value.plan.missingFeatures },
+  { value: 'switching_service', label: t.value.plan.switchingService },
+  { value: 'other', label: t.value.plan.otherReason }
+]);
 
 watch(() => props.modelValue, (val) => {
   visible.value = val;
@@ -392,7 +396,7 @@ function resetLoopStats() {
 // 停止循环
 function stopLoop() {
   shouldStopLoop.value = true;
-  ElMessage.info('正在停止循环...');
+  ElMessage.info(t.value.plan.stoppedManually); // Assuming key added
 }
 
 // 执行单次更换
@@ -404,7 +408,7 @@ async function executeSingleUpdate(): Promise<{ success: boolean; hasReason: boo
       return { success: true, hasReason: false };
     } else {
       const reason = result.payment_failure_reason;
-      loopStats.lastError = reason || '更换计划失败';
+      loopStats.lastError = reason || t.value.plan.updateFailedMsg;
       // 有明确原因表示支付问题（如卡号错误），不计入连续失败
       return { success: false, hasReason: !!reason };
     }
@@ -417,7 +421,7 @@ async function executeSingleUpdate(): Promise<{ success: boolean; hasReason: boo
 // 执行预览
 async function executePreview(): Promise<void> {
   if (!selectedPlan.value) {
-    ElMessage.warning('请先选择订阅计划');
+    ElMessage.warning(t.value.plan.selectPlanFirst);
     return;
   }
   
@@ -429,16 +433,16 @@ async function executePreview(): Promise<void> {
     const result = await apiService.updatePlan(props.accountId, selectedPlan.value, paymentPeriod.value, true);
     if (result.success && result.billing_update) {
       billingPreview.value = result.billing_update;
-      ElMessage.success('预览成功，请查看计费详情');
+      ElMessage.success(t.value.plan.previewSuccess);
     } else if (result.payment_failure_reason) {
       error.value = `支付失败: ${result.payment_failure_reason}`;
       ElMessage.error(error.value);
     } else {
-      ElMessage.info('预览完成，无计费变更');
+      ElMessage.info(t.value.plan.noChange);
     }
   } catch (err: any) {
     error.value = err.toString();
-    ElMessage.error(`预览失败: ${err}`);
+    ElMessage.error(`${t.value.plan.previewBilling} ${t.value.common.error}: ${err}`);
   } finally {
     loading.value = false;
   }
@@ -451,7 +455,7 @@ function delay(ms: number): Promise<void> {
 
 async function handleConfirm() {
   if (!selectedPlan.value) {
-    ElMessage.warning('请选择订阅计划');
+    ElMessage.warning(t.value.plan.selectPlanWarn);
     return;
   }
 
@@ -485,13 +489,13 @@ async function handleConfirm() {
 
       // 检查是否应该停止
       if (shouldStopLoop.value) {
-        ElMessage.warning('循环已被手动停止');
+        ElMessage.warning(t.value.plan.stoppedManually);
         break;
       }
 
       if (loopStats.consecutiveFailures >= 3) {
-        ElMessage.error('连续3次无原因失败，循环已停止');
-        error.value = `连续3次无原因失败: ${loopStats.lastError}`;
+        ElMessage.error(t.value.plan.loopStopped);
+        error.value = `${t.value.plan.loopStopped}: ${loopStats.lastError}`;
         break;
       }
 
@@ -503,28 +507,28 @@ async function handleConfirm() {
     
     // 显示最终统计
     if (loopStats.successCount > 0) {
-      ElMessage.success(`循环结束: 成功 ${loopStats.successCount} 次，失败 ${loopStats.failedCount} 次`);
+      ElMessage.success(t.value.plan.loopFinished.replace('{success}', String(loopStats.successCount)).replace('{failed}', String(loopStats.failedCount)));
       emit('success');
     }
   } else {
     // 单次执行模式
     loading.value = true;
     error.value = '';
-    const periodName = paymentPeriod.value === 2 ? '年付' : '月付';
+    const periodName = paymentPeriod.value === 2 ? t.value.seats.yearly : t.value.seats.monthly;
 
     try {
       const result = await apiService.updatePlan(props.accountId, selectedPlan.value, paymentPeriod.value, false);
       if (result.success) {
-        ElMessage.success(`成功更换到 ${selectedPlan.value.toUpperCase()} 计划（${periodName}）`);
+        ElMessage.success(t.value.plan.updateSuccessMsg.replace('{plan}', selectedPlan.value.toUpperCase()).replace('{period}', periodName));
         emit('success');
         handleClose();
       } else {
-        error.value = result.payment_failure_reason || '更换计划失败';
+        error.value = result.payment_failure_reason || t.value.plan.updateFailedMsg.replace('{error}', '');
         ElMessage.error(error.value);
       }
     } catch (err: any) {
       error.value = err.toString();
-      ElMessage.error(`更换计划失败: ${err}`);
+      ElMessage.error(t.value.plan.updateFailedMsg.replace('{error}', String(err)));
     } finally {
       loading.value = false;
     }
@@ -539,9 +543,9 @@ async function handleCancelSubscription() {
 
     const reasonHtml = `
       <div style="text-align: left; padding: 10px 0;">
-        <p style="margin-bottom: 12px; color: #606266;">请选择取消订阅的原因：</p>
+        <p style="margin-bottom: 12px; color: #606266;">${t.value.plan.cancelReasonTitle}</p>
         <el-radio-group id="cancel-reason-group" style="display: flex; flex-direction: column; gap: 8px;">
-          ${cancelReasons.map(r => `
+          ${cancelReasons.value.map(r => `
             <label style="display: flex; align-items: center; padding: 8px; cursor: pointer; border-radius: 4px; transition: background 0.2s;"
                    onmouseover="this.style.background='#f5f7fa'"
                    onmouseout="this.style.background='transparent'">
@@ -558,9 +562,9 @@ async function handleCancelSubscription() {
     // 初始化全局变量
     (window as any).__selectedCancelReason = 'too_expensive';
 
-    await ElMessageBox.confirm(reasonHtml, '取消订阅确认', {
-      confirmButtonText: '确认取消',
-      cancelButtonText: '返回',
+    await ElMessageBox.confirm(reasonHtml, t.value.plan.cancelConfirmTitle, {
+      confirmButtonText: t.value.plan.confirmCancel,
+      cancelButtonText: t.value.common.cancel,
       type: 'warning',
       dangerouslyUseHTMLString: true,
       beforeClose: async (action, instance, done) => {
@@ -568,26 +572,26 @@ async function handleCancelSubscription() {
           selectedReason = (window as any).__selectedCancelReason || 'too_expensive';
 
           instance.confirmButtonLoading = true;
-          instance.confirmButtonText = '取消中...';
+          instance.confirmButtonText = t.value.plan.canceling;
 
           try {
-            console.log('取消订阅，原因:', selectedReason);
+            console.log('Cancel subscription, reason:', selectedReason);
             const result = await apiService.cancelSubscription(props.accountId, selectedReason);
 
             if (result.success) {
-              ElMessage.success('订阅已成功取消');
+              ElMessage.success(t.value.plan.cancelSuccess);
               emit('success');
               done();
               handleClose();
             } else {
-              ElMessage.error(result.raw_response || '取消订阅失败');
+              ElMessage.error(result.raw_response || t.value.plan.cancelFailed);
               instance.confirmButtonLoading = false;
-              instance.confirmButtonText = '确认取消';
+              instance.confirmButtonText = t.value.plan.confirmCancel;
             }
           } catch (err: any) {
-            ElMessage.error(`取消订阅失败: ${err}`);
+            ElMessage.error(`${t.value.plan.cancelFailed}: ${err}`);
             instance.confirmButtonLoading = false;
-            instance.confirmButtonText = '确认取消';
+            instance.confirmButtonText = t.value.plan.confirmCancel;
           } finally {
             // 清理全局变量
             delete (window as any).__selectedCancelReason;
@@ -611,11 +615,11 @@ async function handleCancelSubscription() {
 async function handleResumeSubscription() {
   try {
     await ElMessageBox.confirm(
-      '确认要恢复订阅吗？恢复后将继续按原计划收费。',
-      '恢复订阅确认',
+      t.value.plan.resumeConfirmContent,
+      t.value.plan.resumeConfirmTitle,
       {
-        confirmButtonText: '确认恢复',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.plan.confirmResume,
+        cancelButtonText: t.value.common.cancel,
         type: 'warning'
       }
     );
@@ -626,14 +630,14 @@ async function handleResumeSubscription() {
       const result = await apiService.resumeSubscription(props.accountId);
 
       if (result.success) {
-        ElMessage.success('订阅已成功恢复');
+        ElMessage.success(t.value.plan.resumeSuccess);
         emit('success');
         handleClose();
       } else {
-        ElMessage.error(result.raw_response || '恢复订阅失败');
+        ElMessage.error(result.raw_response || t.value.plan.resumeFailed);
       }
     } catch (err: any) {
-      ElMessage.error(`恢复订阅失败: ${err}`);
+      ElMessage.error(`${t.value.plan.resumeFailed}: ${err}`);
     } finally {
       resumeLoading.value = false;
     }

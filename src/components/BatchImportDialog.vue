@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="批量导入账号"
+    :title="t.common.batchImport"
     width="700px"
     :close-on-click-modal="false"
     @close="handleClose"
@@ -189,6 +189,7 @@
 import { ref, computed, watch } from 'vue';
 import { Upload } from '@element-plus/icons-vue';
 import { useSettingsStore } from '@/store';
+import { useI18n } from '@/composables/useI18n';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -200,6 +201,7 @@ const emit = defineEmits<{
 }>();
 
 const settingsStore = useSettingsStore();
+const { t } = useI18n();
 
 const visible = computed({
   get: () => props.modelValue,

@@ -9,6 +9,7 @@ const defaultSettings: Partial<Settings> = {
   seat_count_options: [18, 19, 20],
   retry_times: 2,
   theme: 'light',
+  locale: 'zh-CN',
   concurrent_limit: 5,
   show_seats_result_dialog: false,
   useLightweightApi: true,
@@ -18,7 +19,7 @@ const defaultSettings: Partial<Settings> = {
 
 export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<Settings>({ ...defaultSettings } as Settings);
-  
+
   const groups = ref<string[]>([]);
   const tags = ref<GlobalTag[]>([]);
   const logs = ref<OperationLog[]>([]);
@@ -89,7 +90,7 @@ export const useSettingsStore = defineStore('settings', () => {
     error.value = null;
     try {
       await settingsApi.deleteGroup(name);
-      groups.value = groups.value.filter(g => g !== name);
+      groups.value = groups.value.filter((g: string) => g !== name);
     } catch (e) {
       error.value = (e as Error).message;
       throw e;
@@ -97,7 +98,7 @@ export const useSettingsStore = defineStore('settings', () => {
       loading.value = false;
     }
   }
-  
+
   async function renameGroup(oldName: string, newName: string) {
     loading.value = true;
     error.value = null;
@@ -135,7 +136,7 @@ export const useSettingsStore = defineStore('settings', () => {
     try {
       await settingsApi.addTag(tag);
       // 检查是否已存在
-      const existingIndex = tags.value.findIndex(t => t.name === tag.name);
+      const existingIndex = tags.value.findIndex((t: GlobalTag) => t.name === tag.name);
       if (existingIndex === -1) {
         tags.value.push(tag);
       }
@@ -152,7 +153,7 @@ export const useSettingsStore = defineStore('settings', () => {
     error.value = null;
     try {
       await settingsApi.updateTag(oldName, tag);
-      const index = tags.value.findIndex(t => t.name === oldName);
+      const index = tags.value.findIndex((t: GlobalTag) => t.name === oldName);
       if (index !== -1) {
         tags.value[index] = tag;
       }
@@ -169,7 +170,7 @@ export const useSettingsStore = defineStore('settings', () => {
     error.value = null;
     try {
       await settingsApi.deleteTag(name);
-      tags.value = tags.value.filter(t => t.name !== name);
+      tags.value = tags.value.filter((t: GlobalTag) => t.name !== name);
     } catch (e) {
       error.value = (e as Error).message;
       throw e;
@@ -247,7 +248,7 @@ export const useSettingsStore = defineStore('settings', () => {
     logs,
     loading,
     error,
-    
+
     // Actions
     loadSettings,
     updateSettings,

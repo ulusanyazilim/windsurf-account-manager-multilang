@@ -14,7 +14,7 @@
           <div class="header-icon">
             <el-icon><Timer /></el-icon>
           </div>
-          <h3 class="header-text">自动重置积分</h3>
+          <h3 class="header-text">{{ t.menu.autoReset }}</h3>
         </div>
         <el-button :icon="Close" circle @click="visible = false" class="close-btn" />
       </div>
@@ -470,6 +470,9 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Refresh, RefreshRight, Search, Delete, Close, Timer } from '@element-plus/icons-vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useAccountsStore, useSettingsStore } from '@/store';
+import { useI18n } from '@/composables/useI18n';
+
+const { t } = useI18n();
 
 interface AutoResetConfig {
   id: string;

@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="账号信息"
+    :title="t.accountInfo.title"
     width="850px"
     class="account-info-dialog"
     :close-on-click-modal="false"
@@ -9,25 +9,25 @@
   >
     <div v-if="loading" class="loading-container">
       <el-icon class="is-loading" size="32"><Loading /></el-icon>
-      <p>正在获取账号信息...</p>
+      <p>{{ t.accountInfo.loading }}</p>
     </div>
     
     <div v-else-if="accountInfo" class="dialog-content">
       <el-tabs class="custom-tabs">
         <!-- 用户详情页面 -->
-        <el-tab-pane label="用户详情">
-          <template #label>
-            <span class="tab-label"><el-icon><User /></el-icon> 用户详情</span>
-          </template>
+         <el-tab-pane :label="t.accountInfo.userDetails">
+           <template #label>
+             <span class="tab-label"><el-icon><User /></el-icon> {{ t.accountInfo.userDetails }}</span>
+           </template>
           
           <div v-if="loadingUserDetails" class="loading-container">
             <el-icon class="is-loading" size="24"><Loading /></el-icon>
-            <p>正在加载用户详情...</p>
+            <p>{{ t.accountInfo.loadingDetails }}</p>
           </div>
           
           <div v-else-if="!userDetails" class="empty-container">
-            <el-empty description="暂无用户详情数据" :image-size="100">
-              <el-button @click="loadUserDetails" type="primary" size="small">重新加载</el-button>
+            <el-empty :description="t.accountInfo.noDetails" :image-size="100">
+              <el-button @click="loadUserDetails" type="primary" size="small">{{ t.accountInfo.reload }}</el-button>
             </el-empty>
           </div>
           
@@ -42,14 +42,14 @@
                 </div>
                 <div class="profile-info">
                   <div class="name-row">
-                    <h3 class="user-name">{{ userDetails.user?.name || '未知用户' }}</h3>
+                    <h3 class="user-name">{{ userDetails.user?.name || t.accountInfo.unknownUser }}</h3>
                     <el-tag size="small" :type="userDetails.is_root_admin ? 'danger' : 'info'" effect="dark" round>
-                      {{ userDetails.role?.role_name || (userDetails.is_root_admin ? 'Root Admin' : 'Member') }}
+                      {{ userDetails.role?.role_name || (userDetails.is_root_admin ? t.accountInfo.rootAdmin : t.accountInfo.member) }}
                     </el-tag>
                   </div>
                   <div class="email-row">
                     <span class="email">{{ displayEmail(userDetails.user?.email) }}</span>
-                    <el-tooltip content="复制邮箱"><el-icon class="copy-icon" @click="copyText(userDetails.user?.email)"><CopyDocument /></el-icon></el-tooltip>
+                    <el-tooltip :content="t.accountInfo.copyEmail"><el-icon class="copy-icon" @click="copyText(userDetails.user?.email)"><CopyDocument /></el-icon></el-tooltip>
                   </div>
                   <div class="meta-row">
                     <span class="meta-item" v-if="userDetails.user?.username"><el-icon><User /></el-icon> @{{ userDetails.user.username }}</span>
@@ -75,93 +75,93 @@
             <div class="main-info-layout">
               <!-- 左侧：基础信息表格 -->
               <div class="info-card basic-info-card">
-                <div class="card-title"><el-icon><Postcard /></el-icon> 基础信息</div>
+                <div class="card-title"><el-icon><Postcard /></el-icon> {{ t.accountInfo.basicInfo }}</div>
                 <table class="basic-info-table">
                   <tbody>
                     <tr v-if="userDetails.user?.api_key">
-                      <td class="label-cell">用户ID</td>
+                      <td class="label-cell">{{ t.accountInfo.userId }}</td>
                       <td class="value-cell">{{ userDetails.user.api_key }}</td>
                     </tr>
                     <tr>
-                      <td class="label-cell">姓名</td>
+                      <td class="label-cell">{{ t.accountInfo.name }}</td>
                       <td class="value-cell">{{ userDetails.user?.name || '-' }}</td>
                     </tr>
                     <tr>
-                      <td class="label-cell">邮箱</td>
+                      <td class="label-cell">{{ t.accountInfo.email }}</td>
                       <td class="value-cell">{{ displayEmail(userDetails.user?.email) }}</td>
                     </tr>
                     <tr v-if="userDetails.user?.id">
-                      <td class="label-cell">Firebase UID</td>
+                      <td class="label-cell">{{ t.accountInfo.firebaseUid }}</td>
                       <td class="value-cell text-muted">{{ userDetails.user.id }}</td>
                     </tr>
                     <tr v-if="userDetails.user?.username">
-                      <td class="label-cell">团队</td>
+                      <td class="label-cell">{{ t.accountInfo.team }}</td>
                       <td class="value-cell">
                         <el-tag size="small" type="info" effect="plain">{{ userDetails.user.username }}</el-tag>
                       </td>
                     </tr>
                     <tr v-if="userDetails.user?.timezone">
-                      <td class="label-cell">时区</td>
+                      <td class="label-cell">{{ t.accountInfo.timezone }}</td>
                       <td class="value-cell">{{ userDetails.user.timezone }}</td>
                     </tr>
                     <tr>
-                      <td class="label-cell">注册时间</td>
+                      <td class="label-cell">{{ t.accountInfo.signupTime }}</td>
                       <td class="value-cell text-primary">{{ formatDateTime(userDetails.user?.signup_time) }}</td>
                     </tr>
                     <tr v-if="userDetails.user?.last_update_time">
-                      <td class="label-cell">最后更新</td>
+                      <td class="label-cell">{{ t.accountInfo.lastUpdate }}</td>
                       <td class="value-cell text-primary">{{ formatDateTime(userDetails.user.last_update_time) }}</td>
                     </tr>
                     <tr v-if="userDetails.user?.windsurf_pro_trial_end_time">
-                      <td class="label-cell">试用结束</td>
+                      <td class="label-cell">{{ t.accountInfo.trialEnd }}</td>
                       <td class="value-cell text-warning">{{ formatDateTime(userDetails.user.windsurf_pro_trial_end_time) }}</td>
                     </tr>
                     <tr v-if="userDetails.user?.referral_code">
-                      <td class="label-cell">推荐码</td>
+                      <td class="label-cell">{{ t.accountInfo.referralCode }}</td>
                       <td class="value-cell">
                         {{ userDetails.user.referral_code }}
-                        <el-tooltip content="复制推荐链接">
+                        <el-tooltip :content="t.accountInfo.copyLink">
                           <el-icon class="copy-btn" @click="copyReferralLink(userDetails.user.referral_code)"><Link /></el-icon>
                         </el-tooltip>
                       </td>
                     </tr>
                     <tr>
-                      <td class="label-cell">订阅状态</td>
+                      <td class="label-cell">{{ t.accountInfo.subscriptionStatus }}</td>
                       <td class="value-cell">
                         <el-tag size="small" :type="getTeamsTierType(subscriptionTier)" effect="plain">{{ formatTeamsTier(subscriptionTier) }}</el-tag>
                         <el-tag size="small" :type="isSubscriptionActive ? 'success' : 'info'" effect="plain" style="margin-left: 4px;">
-                          {{ isSubscriptionActive ? '活跃' : '未激活' }}
+                          {{ isSubscriptionActive ? t.accountInfo.active : t.accountInfo.inactive }}
                         </el-tag>
                       </td>
                     </tr>
                     <tr v-if="userDetails.team?.stripe_subscription_id">
-                      <td class="label-cell">Stripe订阅ID</td>
+                      <td class="label-cell">{{ t.accountInfo.stripeSubId }}</td>
                       <td class="value-cell text-muted">{{ userDetails.team.stripe_subscription_id }}</td>
                     </tr>
                     <tr v-if="userDetails.team?.stripe_customer_id">
-                      <td class="label-cell">Stripe客户ID</td>
+                      <td class="label-cell">{{ t.accountInfo.stripeCustId }}</td>
                       <td class="value-cell text-muted">{{ userDetails.team.stripe_customer_id }}</td>
                     </tr>
                     <tr>
-                      <td class="label-cell">座位数</td>
+                      <td class="label-cell">{{ t.accountInfo.seatCount }}</td>
                       <td class="value-cell">
-                        <span class="seat-count">{{ seatCount }}</span> 个席位
+                        <span class="seat-count">{{ seatCount }}</span>
                       </td>
                     </tr>
                     <tr v-if="userDetails.team?.current_billing_period_start">
-                      <td class="label-cell">计费开始</td>
+                      <td class="label-cell">{{ t.accountInfo.billingStart }}</td>
                       <td class="value-cell text-success">{{ formatTimestamp(userDetails.team.current_billing_period_start) }}</td>
                     </tr>
                     <tr v-if="userDetails.team?.current_billing_period_end">
-                      <td class="label-cell">计费结束</td>
+                      <td class="label-cell">{{ t.accountInfo.billingEnd }}</td>
                       <td class="value-cell text-warning">{{ formatTimestamp(userDetails.team.current_billing_period_end) }}</td>
                     </tr>
                     <tr v-if="userDetails.team?.cascade_usage_month_start">
-                      <td class="label-cell">Cascade月开始</td>
+                      <td class="label-cell">{{ t.accountInfo.cascadeStart }}</td>
                       <td class="value-cell text-primary">{{ formatTimestamp(userDetails.team.cascade_usage_month_start) }}</td>
                     </tr>
                     <tr v-if="userDetails.team?.cascade_usage_month_end">
-                      <td class="label-cell">Cascade月结束</td>
+                      <td class="label-cell">{{ t.accountInfo.cascadeEnd }}</td>
                       <td class="value-cell text-primary">{{ formatTimestamp(userDetails.team.cascade_usage_month_end) }}</td>
                     </tr>
                   </tbody>
@@ -170,7 +170,7 @@
                 <!-- 使用量/配额美化展示 -->
                 <div class="quota-display-card">
                   <div class="quota-header">
-                    <span class="quota-title">使用量 / 配额</span>
+                    <span class="quota-title">{{ t.accountInfo.usageQuota }}</span>
                     <span class="quota-percentage" :class="getQuotaClass(quotaPercentage)">{{ quotaPercentage }}%</span>
                   </div>
                   <div class="quota-progress-wrap">
@@ -184,24 +184,24 @@
                   </div>
                   <div class="quota-details">
                     <div class="quota-used">
-                      <span class="quota-label">已使用</span>
+                      <span class="quota-label">{{ t.accountInfo.used }}</span>
                       <span class="quota-value">{{ formatCredits(totalUsedCredits) }}</span>
                     </div>
                     <div class="quota-divider">/</div>
                     <div class="quota-total">
-                      <span class="quota-label">总配额</span>
+                      <span class="quota-label">{{ t.accountInfo.total }}</span>
                       <span class="quota-value">{{ formatCredits(totalQuotaCredits) }}</span>
                     </div>
                   </div>
                 </div>
                 <!-- 用户标志 -->
                 <div class="flag-tags-bottom" v-if="hasUserFlags">
-                  <el-tag size="small" type="success" effect="plain" v-if="userDetails.user?.pro"><el-icon><Star /></el-icon> Pro用户</el-tag>
-                  <el-tag size="small" type="success" effect="plain" v-if="userDetails.user?.public_profile_enabled"><el-icon><View /></el-icon> 公开资料</el-tag>
-                  <el-tag size="small" type="info" effect="plain" v-if="userDetails.user?.newsletter"><el-icon><Message /></el-icon> 订阅邮件</el-tag>
-                  <el-tag size="small" type="warning" effect="plain" v-if="userDetails.user?.used_trial"><el-icon><Clock /></el-icon> 已用试用</el-tag>
-                  <el-tag size="small" type="danger" effect="plain" v-if="userDetails.user?.disable_codeium"><el-icon><Close /></el-icon> 已禁用</el-tag>
-                  <el-tag size="small" type="info" effect="plain" v-if="userDetails.user?.disabled_telemetry"><el-icon><Hide /></el-icon> 禁用遥测</el-tag>
+                  <el-tag size="small" type="success" effect="plain" v-if="userDetails.user?.pro"><el-icon><Star /></el-icon> {{ t.accountInfo.proUser }}</el-tag>
+                  <el-tag size="small" type="success" effect="plain" v-if="userDetails.user?.public_profile_enabled"><el-icon><View /></el-icon> {{ t.accountInfo.publicProfile }}</el-tag>
+                  <el-tag size="small" type="info" effect="plain" v-if="userDetails.user?.newsletter"><el-icon><Message /></el-icon> {{ t.accountInfo.newsletter }}</el-tag>
+                  <el-tag size="small" type="warning" effect="plain" v-if="userDetails.user?.used_trial"><el-icon><Clock /></el-icon> {{ t.accountInfo.usedTrial }}</el-tag>
+                  <el-tag size="small" type="danger" effect="plain" v-if="userDetails.user?.disable_codeium"><el-icon><Close /></el-icon> {{ t.accountInfo.disabled }}</el-tag>
+                  <el-tag size="small" type="info" effect="plain" v-if="userDetails.user?.disabled_telemetry"><el-icon><Hide /></el-icon> {{ t.accountInfo.noTelemetry }}</el-tag>
                 </div>
               </div>
 
@@ -209,96 +209,96 @@
               <div class="right-column">
                 <!-- 订阅与套餐 -->
                 <div class="info-card plan-card-bg">
-                  <div class="card-title"><el-icon><Trophy /></el-icon> 订阅与套餐</div>
+                  <div class="card-title"><el-icon><Trophy /></el-icon> {{ t.accountInfo.subscriptionPlan }}</div>
                   <div class="card-content">
                     <div class="plan-badge">
                       <span class="plan-name">{{ formatTeamsTier(subscriptionTier) }}</span>
                       <div class="status-tags">
-                        <el-tag v-if="isSubscriptionActive" type="success" size="small" effect="dark">活跃</el-tag>
-                        <el-tag v-else type="info" size="small" effect="dark">未激活</el-tag>
-                        <el-tag v-if="userDetails.plan?.is_teams" type="primary" size="small" effect="dark">团队版</el-tag>
-                        <el-tag v-if="userDetails.plan?.is_enterprise" type="danger" size="small" effect="dark">企业版</el-tag>
+                        <el-tag v-if="isSubscriptionActive" type="success" size="small" effect="dark">{{ t.accountInfo.active }}</el-tag>
+                        <el-tag v-else type="info" size="small" effect="dark">{{ t.accountInfo.inactive }}</el-tag>
+                        <el-tag v-if="userDetails.plan?.is_teams" type="primary" size="small" effect="dark">{{ t.accountInfo.teamPlan }}</el-tag>
+                        <el-tag v-if="userDetails.plan?.is_enterprise" type="danger" size="small" effect="dark">{{ t.accountInfo.enterprisePlan }}</el-tag>
                       </div>
                     </div>
                     <!-- 积分配额 -->
                     <div class="limits-grid compact">
                       <div class="limit-item">
                         <span class="limit-val">{{ formatCredits(userDetails.plan?.monthly_prompt_credits) }}</span>
-                        <span class="limit-label">月Prompt积分</span>
+                        <span class="limit-label">{{ t.accountInfo.monthlyPrompt }}</span>
                       </div>
                       <div class="limit-item">
                         <span class="limit-val">{{ formatCredits(userDetails.plan?.monthly_flow_credits) }}</span>
-                        <span class="limit-label">月Flow积分</span>
+                        <span class="limit-label">{{ t.accountInfo.monthlyFlow }}</span>
                       </div>
                       <div class="limit-item">
                         <span class="limit-val">{{ formatCredits(userDetails.plan?.monthly_flex_credit_purchase_amount) }}</span>
-                        <span class="limit-label">月Flex额度</span>
+                        <span class="limit-label">{{ t.accountInfo.monthlyFlex }}</span>
                       </div>
                       <div class="limit-item">
                         <span class="limit-val">{{ userDetails.plan?.max_num_premium_chat_messages || 0 }}</span>
-                        <span class="limit-label">高级聊天数</span>
+                        <span class="limit-label">{{ t.accountInfo.premiumChat }}</span>
                       </div>
                       <div class="limit-item" v-if="userDetails.plan?.max_num_chat_input_tokens">
                         <span class="limit-val">{{ formatLargeNumber(userDetails.plan.max_num_chat_input_tokens) }}</span>
-                        <span class="limit-label">聊天Tokens</span>
+                        <span class="limit-label">{{ t.accountInfo.chatTokens }}</span>
                       </div>
                     </div>
                     <!-- 限制信息表格 -->
                     <table class="plan-limits-table">
                       <tbody>
                         <tr>
-                          <td class="label-cell">团队席位</td>
-                          <td class="value-cell"><el-tag size="small" type="primary" effect="plain">{{ seatCount }} 个</el-tag></td>
-                          <td class="label-cell">带宽限制</td>
+                          <td class="label-cell">{{ t.accountInfo.teamSeats }}</td>
+                          <td class="value-cell"><el-tag size="small" type="primary" effect="plain">{{ seatCount }}</el-tag></td>
+                          <td class="label-cell">{{ t.accountInfo.bandwidth }}</td>
                           <td class="value-cell">{{ formatCredits(userDetails.plan?.monthly_prompt_credits) }}</td>
                         </tr>
                         <tr>
-                          <td class="label-cell">缓存限制</td>
+                          <td class="label-cell">{{ t.accountInfo.cacheLimit }}</td>
                           <td class="value-cell">{{ formatCredits(userDetails.plan?.monthly_flow_credits) }}</td>
-                          <td class="label-cell">存储配额</td>
+                          <td class="label-cell">{{ t.accountInfo.storageQuota }}</td>
                           <td class="value-cell">{{ formatStorageSize(userDetails.plan?.max_num_chat_input_tokens) }}</td>
                         </tr>
                         <tr>
-                          <td class="label-cell">API限制</td>
+                          <td class="label-cell">{{ t.accountInfo.apiLimit }}</td>
                           <td class="value-cell">{{ formatApiLimit(userDetails.plan?.max_num_premium_chat_messages) }}</td>
-                          <td class="label-cell">超时时间</td>
+                          <td class="label-cell">{{ t.accountInfo.timeout }}</td>
                           <td class="value-cell">{{ userDetails.plan?.max_custom_chat_instruction_characters || 0 }} 秒</td>
                         </tr>
                       </tbody>
                     </table>
                     <!-- 功能开关 -->
                     <div class="feature-switches compact" v-if="userDetails.plan">
-                      <div class="feature-label">功能开关</div>
+                      <div class="feature-label">{{ t.accountInfo.featureSwitch }}</div>
                       <div class="feature-tags">
                         <el-tag size="small" :type="userDetails.plan.has_autocomplete_fast_mode ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.has_autocomplete_fast_mode" /><Close v-else /></el-icon> 快速补全
+                          <el-icon><Check v-if="userDetails.plan.has_autocomplete_fast_mode" /><Close v-else /></el-icon> {{ t.accountInfo.fastMode }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.allow_sticky_premium_models ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.allow_sticky_premium_models" /><Close v-else /></el-icon> 高级模型
+                          <el-icon><Check v-if="userDetails.plan.allow_sticky_premium_models" /><Close v-else /></el-icon> {{ t.accountInfo.premiumModels }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.cascade_web_search_enabled ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.cascade_web_search_enabled" /><Close v-else /></el-icon> 网络搜索
+                          <el-icon><Check v-if="userDetails.plan.cascade_web_search_enabled" /><Close v-else /></el-icon> {{ t.accountInfo.webSearch }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.cascade_can_auto_run_commands ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.cascade_can_auto_run_commands" /><Close v-else /></el-icon> 自动命令
+                          <el-icon><Check v-if="userDetails.plan.cascade_can_auto_run_commands" /><Close v-else /></el-icon> {{ t.accountInfo.autoCommands }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.has_tab_to_jump ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.has_tab_to_jump" /><Close v-else /></el-icon> Tab跳转
+                          <el-icon><Check v-if="userDetails.plan.has_tab_to_jump" /><Close v-else /></el-icon> {{ t.accountInfo.tabJump }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.knowledge_base_enabled ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.knowledge_base_enabled" /><Close v-else /></el-icon> 知识库
+                          <el-icon><Check v-if="userDetails.plan.knowledge_base_enabled" /><Close v-else /></el-icon> {{ t.accountInfo.knowledgeBase }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.browser_enabled ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.browser_enabled" /><Close v-else /></el-icon> 浏览器
+                          <el-icon><Check v-if="userDetails.plan.browser_enabled" /><Close v-else /></el-icon> {{ t.accountInfo.browser }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.can_share_conversations ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.can_share_conversations" /><Close v-else /></el-icon> 分享对话
+                          <el-icon><Check v-if="userDetails.plan.can_share_conversations" /><Close v-else /></el-icon> {{ t.accountInfo.shareConv }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.can_buy_more_credits ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.can_buy_more_credits" /><Close v-else /></el-icon> 购买积分
+                          <el-icon><Check v-if="userDetails.plan.can_buy_more_credits" /><Close v-else /></el-icon> {{ t.accountInfo.buyCredits }}
                         </el-tag>
                         <el-tag size="small" :type="userDetails.plan.can_customize_app_icon ? 'success' : 'info'" effect="plain">
-                          <el-icon><Check v-if="userDetails.plan.can_customize_app_icon" /><Close v-else /></el-icon> 自定义图标
+                          <el-icon><Check v-if="userDetails.plan.can_customize_app_icon" /><Close v-else /></el-icon> {{ t.accountInfo.customIcon }}
                         </el-tag>
                       </div>
                     </div>
@@ -307,20 +307,20 @@
 
                 <!-- 积分与配额 -->
                 <div class="info-card" v-if="userDetails.plan || userDetails.team">
-                  <div class="card-title"><el-icon><Coin /></el-icon> 积分与配额</div>
+                  <div class="card-title"><el-icon><Coin /></el-icon> {{ t.accountInfo.creditsQuota }}</div>
                   <div class="card-content">
                     <div class="credits-grid compact">
                       <div class="credit-item">
                         <span class="credit-val">{{ formatCredits(remainingPromptCredits) }}</span>
-                        <span class="credit-label">剩余Prompt</span>
+                        <span class="credit-label">{{ t.accountInfo.remainingPrompt }}</span>
                       </div>
                       <div class="credit-item">
                         <span class="credit-val">{{ formatCredits(remainingFlowCredits) }}</span>
-                        <span class="credit-label">剩余Flow</span>
+                        <span class="credit-label">{{ t.accountInfo.remainingFlow }}</span>
                       </div>
                       <div class="credit-item" v-if="userDetails.team?.flex_credit_quota">
                         <span class="credit-val">{{ formatCredits(remainingFlexCredits) }}</span>
-                        <span class="credit-label">剩余Flex</span>
+                        <span class="credit-label">{{ t.accountInfo.remainingFlex }}</span>
                       </div>
                     </div>
                   </div>
@@ -328,16 +328,16 @@
 
                 <!-- 团队信息卡片（移到右侧） -->
                 <div class="info-card team-info-card" v-if="userDetails.team">
-                  <div class="card-title"><el-icon><Connection /></el-icon> 团队信息</div>
+                  <div class="card-title"><el-icon><Connection /></el-icon> {{ t.accountInfo.teamInfo }}</div>
                   <div class="card-content">
                     <!-- 团队基本信息 -->
                     <div class="team-basic-info">
                       <div class="team-info-row">
-                        <span class="info-label">团队名称</span>
+                        <span class="info-label">{{ t.accountInfo.teamName }}</span>
                         <span class="info-value team-name">{{ userDetails.team?.name }}</span>
                       </div>
                       <div class="team-info-row" v-if="userDetails.team?.teams_tier">
-                        <span class="info-label">团队层级</span>
+                        <span class="info-label">{{ t.accountInfo.teamTier }}</span>
                         <el-tag size="small" :type="getTeamsTierType(userDetails.team.teams_tier)" effect="dark">{{ formatTeamsTier(userDetails.team.teams_tier) }}</el-tag>
                       </div>
                     </div>
@@ -345,28 +345,28 @@
                     <!-- ID信息区块 -->
                     <div class="id-info-section">
                       <div class="id-row" v-if="userDetails.team?.id">
-                        <span class="id-label">团队ID</span>
+                        <span class="id-label">{{ t.accountInfo.teamId }}</span>
                         <div class="id-value-wrap">
                           <code class="id-code" :title="userDetails.team.id">{{ userDetails.team.id }}</code>
                           <el-button size="small" :icon="CopyDocument" circle @click="copyText(userDetails.team.id)" />
                         </div>
                       </div>
                       <div class="id-row" v-if="userDetails.team?.invite_id">
-                        <span class="id-label">邀请码</span>
+                        <span class="id-label">{{ t.accountInfo.inviteCode }}</span>
                         <div class="id-value-wrap">
                           <code class="id-code" :title="userDetails.team.invite_id">{{ userDetails.team.invite_id }}</code>
                           <el-button size="small" :icon="CopyDocument" circle @click="copyText(userDetails.team.invite_id)" />
                         </div>
                       </div>
                       <div class="id-row" v-if="userDetails.team?.stripe_customer_id">
-                        <span class="id-label">Stripe客户</span>
+                        <span class="id-label">{{ t.accountInfo.stripeCustomer }}</span>
                         <div class="id-value-wrap">
                           <code class="id-code stripe" :title="userDetails.team.stripe_customer_id">{{ userDetails.team.stripe_customer_id }}</code>
                           <el-button size="small" :icon="CopyDocument" circle @click="copyText(userDetails.team.stripe_customer_id)" />
                         </div>
                       </div>
                       <div class="id-row" v-if="userDetails.team?.stripe_subscription_id">
-                        <span class="id-label">Stripe订阅</span>
+                        <span class="id-label">{{ t.accountInfo.stripeSubscription }}</span>
                         <div class="id-value-wrap">
                           <code class="id-code stripe" :title="userDetails.team.stripe_subscription_id">{{ userDetails.team.stripe_subscription_id }}</code>
                           <el-button size="small" :icon="CopyDocument" circle @click="copyText(userDetails.team.stripe_subscription_id)" />
@@ -378,15 +378,15 @@
                     <div class="team-stats">
                       <div class="stat-box">
                         <span class="stat-number">{{ userDetails.team?.num_users || 1 }}</span>
-                        <span class="stat-text">成员</span>
+                        <span class="stat-text">{{ t.accountInfo.members }}</span>
                       </div>
                       <div class="stat-box">
                         <span class="stat-number">{{ userDetails.team?.num_seats_current_billing_period || 1 }}</span>
-                        <span class="stat-text">席位</span>
+                        <span class="stat-text">{{ t.accountInfo.seats }}</span>
                       </div>
                       <div class="stat-box" v-if="userDetails.team?.num_cascade_seats">
                         <span class="stat-number">{{ userDetails.team.num_cascade_seats }}</span>
-                        <span class="stat-text">Cascade</span>
+                        <span class="stat-text">{{ t.accountInfo.cascade }}</span>
                       </div>
                     </div>
                     
@@ -394,16 +394,16 @@
                     <div class="cascade-period" v-if="userDetails.team?.cascade_usage_month_start || userDetails.team?.cascade_usage_month_end">
                       <div class="period-header">
                         <el-icon><Clock /></el-icon>
-                        <span>Cascade 使用周期</span>
+                        <span>{{ t.accountInfo.cascadePeriod }}</span>
                       </div>
                       <div class="period-dates">
                         <div class="period-date start">
-                          <span class="date-label">开始</span>
+                          <span class="date-label">{{ t.accountInfo.start }}</span>
                           <span class="date-value">{{ formatTimestamp(userDetails.team?.cascade_usage_month_start) }}</span>
                         </div>
                         <el-icon class="period-arrow"><Right /></el-icon>
                         <div class="period-date end">
-                          <span class="date-label">结束</span>
+                          <span class="date-label">{{ t.accountInfo.end }}</span>
                           <span class="date-value">{{ formatTimestamp(userDetails.team?.cascade_usage_month_end) }}</span>
                         </div>
                       </div>
@@ -412,26 +412,26 @@
                     <!-- 积分使用情况 -->
                     <div class="credits-usage" v-if="userDetails.team?.used_prompt_credits || userDetails.team?.used_flow_credits">
                       <div class="usage-item" v-if="userDetails.team?.used_prompt_credits">
-                        <span class="usage-label">已用Prompt</span>
+                        <span class="usage-label">{{ t.accountInfo.usedPrompt }}</span>
                         <span class="usage-value">{{ formatCredits(userDetails.team.used_prompt_credits) }}</span>
                       </div>
                       <div class="usage-item" v-if="userDetails.team?.used_flow_credits">
-                        <span class="usage-label">已用Flow</span>
+                        <span class="usage-label">{{ t.accountInfo.usedFlow }}</span>
                         <span class="usage-value">{{ formatCredits(userDetails.team.used_flow_credits) }}</span>
                       </div>
                       <div class="usage-item" v-if="userDetails.team?.used_flex_credits">
-                        <span class="usage-label">已用Flex</span>
+                        <span class="usage-label">{{ t.accountInfo.usedFlex }}</span>
                         <span class="usage-value">{{ formatCredits(userDetails.team.used_flex_credits) }}</span>
                       </div>
                     </div>
                     
                     <!-- 团队特性标志 -->
                     <div class="team-flags" v-if="hasTeamFlags">
-                      <el-tag size="small" type="success" effect="dark" round v-if="userDetails.team?.subscription_active"><el-icon><Check /></el-icon> 订阅激活</el-tag>
-                      <el-tag size="small" type="warning" effect="plain" round v-if="userDetails.team?.used_trial"><el-icon><Clock /></el-icon> 已用试用</el-tag>
-                      <el-tag size="small" type="primary" effect="plain" round v-if="userDetails.team?.attribution_enabled"><el-icon><DataAnalysis /></el-icon> 归因</el-tag>
-                      <el-tag size="small" type="danger" effect="plain" round v-if="userDetails.team?.sso_provider_id"><el-icon><Lock /></el-icon> SSO</el-tag>
-                      <el-tag size="small" type="info" effect="plain" round v-if="userDetails.team?.top_up_enabled"><el-icon><Coin /></el-icon> 充值</el-tag>
+                      <el-tag size="small" type="success" effect="dark" round v-if="userDetails.team?.subscription_active"><el-icon><Check /></el-icon> {{ t.accountInfo.subActive }}</el-tag>
+                      <el-tag size="small" type="warning" effect="plain" round v-if="userDetails.team?.used_trial"><el-icon><Clock /></el-icon> {{ t.accountInfo.usedTrial }}</el-tag>
+                      <el-tag size="small" type="primary" effect="plain" round v-if="userDetails.team?.attribution_enabled"><el-icon><DataAnalysis /></el-icon> {{ t.accountInfo.attribution }}</el-tag>
+                      <el-tag size="small" type="danger" effect="plain" round v-if="userDetails.team?.sso_provider_id"><el-icon><Lock /></el-icon> {{ t.accountInfo.sso }}</el-tag>
+                      <el-tag size="small" type="info" effect="plain" round v-if="userDetails.team?.top_up_enabled"><el-icon><Coin /></el-icon> {{ t.accountInfo.topUp }}</el-tag>
                     </div>
                   </div>
                 </div>
@@ -441,27 +441,24 @@
             <!-- 角色与权限卡片（移到左侧基础信息下方，独立一行） -->
             <div class="role-permission-section" v-if="userDetails.role || userDetails.permissions">
               <div class="info-card">
-                <div class="card-title"><el-icon><Key /></el-icon> 角色与权限</div>
+                <div class="card-title"><el-icon><Key /></el-icon> {{ t.accountInfo.rolesPermissions }}</div>
                 <div class="card-content role-content">
-                  <div class="role-info-row">
-                    <div class="info-item" v-if="userDetails.role?.role_id">
-                      <span class="label">角色 ID</span>
-                      <span class="value">{{ userDetails.role.role_id }}</span>
-                    </div>
-                    <div class="info-item" v-if="userDetails.role?.role_name">
-                      <span class="label">角色名称</span>
+                  <el-descriptions :column="2" border size="small">
+                    <el-descriptions-item :label="t.accountInfo.roleId" v-if="userDetails.role?.role_id">
+                      <code class="role-code">{{ userDetails.role.role_id }}</code>
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="t.accountInfo.roleName" v-if="userDetails.role?.role_name">
                       <el-tag size="small" type="danger" effect="dark">{{ userDetails.role.role_name }}</el-tag>
-                    </div>
-                    <div class="info-item" v-if="userDetails.user?.team_status !== undefined">
-                      <span class="label">团队状态</span>
+                    </el-descriptions-item>
+                    <el-descriptions-item :label="t.accountInfo.teamStatus" v-if="userDetails.user?.team_status !== undefined">
                       <el-tag size="small" :type="getTeamStatusType(userDetails.user.team_status)">{{ formatTeamStatus(userDetails.user.team_status) }}</el-tag>
-                    </div>
-                  </div>
+                    </el-descriptions-item>
+                  </el-descriptions>
                   <!-- 权限位图可视化 -->
                   <div class="permission-visual" v-if="userDetails.permissions">
-                    <div class="perm-label">权限位图 ({{ getPermissionCount(userDetails.permissions) }}/31)</div>
+                    <div class="perm-label">{{ t.accountInfo.permBitmap }} ({{ getPermissionCount(userDetails.permissions) }}/31)</div>
                     <div class="perm-dots">
-                      <el-tooltip v-for="i in 31" :key="i" :content="`权限 ${i}: ${hasPermission(userDetails.permissions, i) ? '已授予' : '未授予'}`">
+                      <el-tooltip v-for="i in 31" :key="i" :content="`${t.accountInfo.permission} ${i}: ${hasPermission(userDetails.permissions, i) ? t.accountInfo.permGranted : t.accountInfo.permNotGranted}`">
                         <span class="perm-dot" :class="{ active: hasPermission(userDetails.permissions, i) }"></span>
                       </el-tooltip>
                     </div>
@@ -472,82 +469,77 @@
             
             <!-- 原始数据折叠 -->
             <el-collapse v-if="parsedData" class="raw-data-collapse">
-              <el-collapse-item title="开发者原始数据">
+              <el-collapse-item>
+                <template #title>
+                  <span class="collapse-title">{{ t.accountInfo.developerRawData }}</span>
+                  <el-icon class="collapse-arrow"><Right /></el-icon>
+                </template>
                 <pre class="raw-data">{{ JSON.stringify(parsedData, null, 2) }}</pre>
               </el-collapse-item>
             </el-collapse>
           </div>
         </el-tab-pane>
         
-        <!-- 本地信息 -->
-        <el-tab-pane label="本地信息">
+        <!-- 本地信息页面 -->
+        <el-tab-pane :label="t.accountInfo.localInfo">
           <template #label>
-            <span class="tab-label"><el-icon><Monitor /></el-icon> 本地信息</span>
+            <span class="tab-label"><el-icon><Monitor /></el-icon> {{ t.accountInfo.localInfo }}</span>
           </template>
           
           <div class="local-info-container">
-            <table class="local-info-table">
-              <tbody>
-                <tr>
-                  <td class="label-cell">账号ID</td>
-                  <td class="value-cell">{{ accountInfo.local_info?.id }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">邮箱</td>
-                  <td class="value-cell">{{ displayEmail(accountInfo.local_info?.email) }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">昵称</td>
-                  <td class="value-cell">{{ accountInfo.local_info?.nickname || '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">分组</td>
-                  <td class="value-cell">
-                    <el-tag size="small" type="primary" effect="plain">{{ accountInfo.local_info?.group || '默认分组' }}</el-tag>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label-cell">标签</td>
-                  <td class="value-cell">
-                    <template v-if="accountInfo.local_info?.tags?.length">
-                      <el-tag v-for="tag in accountInfo.local_info.tags" :key="tag" size="small" type="info" effect="plain" style="margin-right: 4px;">{{ tag }}</el-tag>
-                    </template>
-                    <span v-else class="empty-text">无</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label-cell">创建时间</td>
-                  <td class="value-cell">{{ formatDate(accountInfo.local_info?.created_at) || '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">最后登录</td>
-                  <td class="value-cell">{{ formatDate(accountInfo.local_info?.last_login_at) || '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">Token过期时间</td>
-                  <td class="value-cell">{{ formatDate(accountInfo.local_info?.token_expires_at) || '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">最后座位数</td>
-                  <td class="value-cell">{{ accountInfo.local_info?.last_seat_count ?? '-' }}</td>
-                </tr>
-                <tr>
-                  <td class="label-cell">状态</td>
-                  <td class="value-cell">
-                    <el-tag :type="accountInfo.local_info?.status === 'active' ? 'success' : (accountInfo.local_info?.status === 'error' ? 'danger' : 'info')" size="small" effect="plain">
-                      {{ accountInfo.local_info?.status }}
-                    </el-tag>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item :label="t.accountInfo.accountId">
+                <code class="id-code">{{ accountInfo.local_info?.id }}</code>
+                <el-button size="small" :icon="CopyDocument" circle @click="copyText(accountInfo.local_info?.id)" />
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.email">
+                {{ displayEmail(accountInfo.local_info?.email) }}
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.nickname">
+                {{ accountInfo.local_info?.nickname || '-' }}
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.group">
+                <el-tag size="small" type="primary" effect="plain">{{ accountInfo.local_info?.group || t.accounts.defaultGroup }}</el-tag>
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.tags">
+                <div class="tags-wrapper" v-if="accountInfo.local_info?.tags?.length">
+                  <el-tag 
+                    v-for="tag in accountInfo.local_info.tags" 
+                    :key="tag" 
+                    size="small" 
+                    type="info" 
+                    effect="plain" 
+                    style="margin-right: 4px;"
+                  >{{ tag }}</el-tag>
+                </div>
+                <span v-else class="empty-text">{{ t.accountInfo.none }}</span>
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.createdAt">{{ formatDate(accountInfo.local_info?.created_at) || '-' }}</el-descriptions-item>
+              <el-descriptions-item :label="t.accountInfo.lastLogin">{{ formatDate(accountInfo.local_info?.last_login_at) || '-' }}</el-descriptions-item>
+              <el-descriptions-item :label="t.accountInfo.tokenExpires">{{ formatDate(accountInfo.local_info?.token_expires_at) || '-' }}</el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.lastSeatCount">
+                {{ accountInfo.local_info?.last_seat_count ?? '-' }}
+              </el-descriptions-item>
+              
+              <el-descriptions-item :label="t.accountInfo.status">
+                <el-tag :type="accountInfo.local_info?.status === 'active' ? 'success' : (accountInfo.local_info?.status === 'error' ? 'danger' : 'info')" size="small" effect="plain">
+                  {{ accountInfo.local_info?.status }}
+                </el-tag>
+              </el-descriptions-item>
+            </el-descriptions>
           </div>
         </el-tab-pane>
         
-        <!-- Firebase信息 -->
-        <el-tab-pane label="Firebase" v-if="accountInfo.firebase_info">
+        <!-- Firebase信息页面 -->
+        <el-tab-pane :label="t.accountInfo.firebaseInfo" v-if="accountInfo.firebase_info">
           <template #label>
-            <span class="tab-label"><el-icon><Key /></el-icon> Firebase信息</span>
+            <span class="tab-label"><el-icon><Key /></el-icon> {{ t.accountInfo.firebaseInfo }}</span>
           </template>
           
           <div class="firebase-container">
@@ -555,51 +547,51 @@
             <div class="info-card wide">
               <div class="card-title">
                 <el-icon color="#409eff"><User /></el-icon>
-                <span>用户身份信息</span>
+                <span>{{ t.accountInfo.identityInfo }}</span>
                 <div class="header-tags">
                   <el-tag v-if="accountInfo.firebase_info?.emailVerified ?? accountInfo.firebase_info?.email_verified" type="success" size="small" effect="plain">
-                    <el-icon><Check /></el-icon> 已验证
+                    <el-icon><Check /></el-icon> {{ t.accountInfo.verified }}
                   </el-tag>
-                  <el-tag v-else type="warning" size="small" effect="plain">未验证</el-tag>
+                  <el-tag v-else type="warning" size="small" effect="plain">{{ t.accountInfo.unverified }}</el-tag>
                 </div>
               </div>
               <div class="card-content">
                 <div class="firebase-info-grid">
                   <div class="info-row">
                     <div class="info-cell">
-                      <span class="label">Firebase UID</span>
+                      <span class="label">{{ t.accountInfo.firebaseUid }}</span>
                       <span class="value text-ellipsis" :title="firebaseUid">{{ firebaseUid }}</span>
                     </div>
                     <div class="info-cell">
-                      <span class="label">邮箱</span>
+                      <span class="label">{{ t.accountInfo.email }}</span>
                       <span class="value">{{ displayEmail(accountInfo.firebase_info?.email) }}</span>
                     </div>
                   </div>
                   <div class="info-row">
                     <div class="info-cell">
-                      <span class="label">显示名称</span>
+                      <span class="label">{{ t.accountInfo.displayName }}</span>
                       <span class="value">{{ accountInfo.firebase_info?.displayName || accountInfo.firebase_info?.display_name || '-' }}</span>
                     </div>
                     <div class="info-cell">
-                      <span class="label">邮箱验证状态</span>
+                      <span class="label">{{ t.accountInfo.emailVerificationStatus }}</span>
                       <span class="value">
                         <el-tag size="small" :type="(accountInfo.firebase_info?.emailVerified ?? accountInfo.firebase_info?.email_verified) ? 'success' : 'warning'" effect="plain">
-                          {{ (accountInfo.firebase_info?.emailVerified ?? accountInfo.firebase_info?.email_verified) ? '已验证' : '未验证' }}
+                          {{ (accountInfo.firebase_info?.emailVerified ?? accountInfo.firebase_info?.email_verified) ? t.accountInfo.verified : t.accountInfo.unverified }}
                         </el-tag>
                       </span>
                     </div>
                   </div>
                   <div class="info-row">
                     <div class="info-cell">
-                      <span class="label">账户状态</span>
+                      <span class="label">{{ t.accountInfo.accountStatus }}</span>
                       <span class="value">
                         <el-tag size="small" :type="accountInfo.firebase_info?.disabled ? 'danger' : 'success'" effect="plain">
-                          {{ accountInfo.firebase_info?.disabled ? '已禁用' : '正常' }}
+                          {{ accountInfo.firebase_info?.disabled ? t.accountInfo.disabled : t.accountInfo.normal }}
                         </el-tag>
                       </span>
                     </div>
                     <div class="info-cell">
-                      <span class="label">有效期开始</span>
+                      <span class="label">{{ t.accountInfo.validSince }}</span>
                       <span class="value">{{ formatFirebaseTimestamp(accountInfo.firebase_info?.validSince || accountInfo.firebase_info?.valid_since) }}</span>
                     </div>
                   </div>
@@ -609,33 +601,33 @@
             
             <!-- 时间信息卡片 -->
             <div class="info-card wide timeline-card">
-              <div class="card-title"><el-icon color="#409eff"><Clock /></el-icon> 时间信息</div>
+              <div class="card-title"><el-icon color="#409eff"><Clock /></el-icon> {{ t.accountInfo.timeInfo }}</div>
               <div class="horizontal-timeline four-items">
                 <div class="timeline-item">
                   <div class="timeline-dot dot-blue"><el-icon><UserFilled /></el-icon></div>
                   <div class="timeline-content">
-                    <div class="timeline-title">账户创建</div>
+                    <div class="timeline-title">{{ t.accountInfo.accountCreation }}</div>
                     <div class="timeline-time">{{ formatFirebaseTimestamp(accountInfo.firebase_info?.createdAt || accountInfo.firebase_info?.created_at) }}</div>
                   </div>
                 </div>
                 <div class="timeline-item">
                   <div class="timeline-dot dot-orange"><el-icon><Key /></el-icon></div>
                   <div class="timeline-content">
-                    <div class="timeline-title">密码更新</div>
+                    <div class="timeline-title">{{ t.accountInfo.passwordUpdate }}</div>
                     <div class="timeline-time">{{ formatFirebaseTimestamp(accountInfo.firebase_info?.passwordUpdatedAt || accountInfo.firebase_info?.password_updated_at) }}</div>
                   </div>
                 </div>
                 <div class="timeline-item">
                   <div class="timeline-dot dot-green"><el-icon><Check /></el-icon></div>
                   <div class="timeline-content">
-                    <div class="timeline-title">最后登录</div>
+                    <div class="timeline-title">{{ t.accountInfo.lastLogin }}</div>
                     <div class="timeline-time">{{ formatFirebaseTimestamp(accountInfo.firebase_info?.lastLoginAt || accountInfo.firebase_info?.last_login_at) }}</div>
                   </div>
                 </div>
                 <div class="timeline-item">
                   <div class="timeline-dot dot-gray"><el-icon><Refresh /></el-icon></div>
                   <div class="timeline-content">
-                    <div class="timeline-title">最后刷新</div>
+                    <div class="timeline-title">{{ t.accountInfo.lastRefresh }}</div>
                     <div class="timeline-time">{{ formatFirebaseTimestamp(accountInfo.firebase_info?.lastRefreshAt || accountInfo.firebase_info?.last_refresh_at) }}</div>
                   </div>
                 </div>
@@ -644,34 +636,34 @@
             
             <!-- 认证提供商卡片 -->
             <div class="info-card wide" v-if="(accountInfo.firebase_info?.providerUserInfo || accountInfo.firebase_info?.provider_user_info)?.length">
-              <div class="card-title"><el-icon color="#409eff"><Link /></el-icon> 认证提供商</div>
+              <div class="card-title"><el-icon color="#409eff"><Link /></el-icon> {{ t.accountInfo.authProvider }}</div>
               <div class="card-content" v-for="(provider, idx) in (accountInfo.firebase_info.providerUserInfo || accountInfo.firebase_info.provider_user_info)" :key="idx">
                 <div class="firebase-info-grid">
                   <div class="info-row">
                     <div class="info-cell">
-                      <span class="label">提供商 ID</span>
+                      <span class="label">{{ t.accountInfo.providerId }}</span>
                       <span class="value">
                         <el-tag size="small" type="info" effect="plain">{{ formatProviderName(provider.providerId || provider.provider_id) }}</el-tag>
                       </span>
                     </div>
                     <div class="info-cell">
-                      <span class="label">用户 ID</span>
+                      <span class="label">{{ t.accountInfo.userId }}</span>
                       <span class="value">{{ provider.rawId || provider.raw_id || displayEmail(provider.email) }}</span>
                     </div>
                   </div>
                   <div class="info-row">
                     <div class="info-cell">
-                      <span class="label">联邦 ID</span>
+                      <span class="label">{{ t.accountInfo.federatedId }}</span>
                       <span class="value text-ellipsis">{{ provider.federatedId || provider.federated_id || displayEmail(provider.email) }}</span>
                     </div>
                     <div class="info-cell">
-                      <span class="label">邮箱</span>
+                      <span class="label">{{ t.accountInfo.email }}</span>
                       <span class="value">{{ displayEmail(provider.email) }}</span>
                     </div>
                   </div>
                   <div class="info-row" v-if="provider.displayName || provider.display_name">
                     <div class="info-cell full-width">
-                      <span class="label">显示名称</span>
+                      <span class="label">{{ t.accountInfo.displayName }}</span>
                       <span class="value">{{ provider.displayName || provider.display_name }}</span>
                     </div>
                   </div>
@@ -683,7 +675,7 @@
             <el-collapse class="raw-data-collapse">
               <el-collapse-item>
                 <template #title>
-                  <span class="collapse-title">查看Firebase原始数据</span>
+                  <span class="collapse-title">{{ t.accountInfo.viewFirebaseData }}</span>
                   <el-icon class="collapse-arrow"><Right /></el-icon>
                 </template>
                 <pre class="raw-json">{{ JSON.stringify(accountInfo.firebase_info, null, 2) }}</pre>
@@ -696,7 +688,7 @@
     
     <div v-else-if="error" class="error-container">
       <el-alert
-        title="获取账号信息失败"
+        :title="t.accountInfo.fetchAccountInfoFailed"
         :description="error"
         type="error"
         show-icon
@@ -707,7 +699,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="refresh" :icon="Refresh" circle />
-        <el-button @click="handleClose">关闭</el-button>
+        <el-button @click="handleClose">{{ t.accountInfo.close }}</el-button>
       </div>
     </template>
   </el-dialog>
@@ -726,7 +718,9 @@ import { useUIStore, useSettingsStore } from '@/store';
 import { apiService } from '@/api';
 import { maskEmail } from '@/utils/privacy';
 import dayjs from 'dayjs';
+import { useI18n } from '@/composables/useI18n';
 
+const { t } = useI18n();
 const uiStore = useUIStore();
 const settingsStore = useSettingsStore();
 
@@ -782,11 +776,11 @@ async function loadAccountInfo() {
     if (result.success) {
       accountInfo.value = result;
     } else {
-      error.value = result.error || '获取失败';
+      error.value = result.error || t.value.accountInfo.fetchFailed;
     }
   } catch (err: any) {
     error.value = err.toString();
-    ElMessage.error(`获取账号信息失败: ${err}`);
+    ElMessage.error(`${t.value.accountInfo.fetchAccountInfoFailed}: ${err}`);
   } finally {
     loading.value = false;
   }
@@ -814,14 +808,14 @@ async function loadUserDetails() {
       console.warn('API返回失败或没有数据:', result);
       // 显示错误信息
       if (result && result.error) {
-        ElMessage.warning(`获取用户详情失败: ${result.error}`);
+        ElMessage.warning(`${t.value.accountInfo.fetchUserDetailsFailed}: ${result.error}`);
       } else {
-        console.log('未获取到用户详情数据');
+        console.log(t.value.accountInfo.noUserDetailsData);
       }
     }
   } catch (err: any) {
-    console.error('获取用户详情失败:', err);
-    ElMessage.error(`获取用户详情失败: ${err.message || err}`);
+    console.error(`${t.value.accountInfo.fetchUserDetailsFailed}:`, err);
+    ElMessage.error(`${t.value.accountInfo.fetchUserDetailsFailed}: ${err.message || err}`);
   } finally {
     loadingUserDetails.value = false;
   }
@@ -863,23 +857,23 @@ function getExpireCountdown(timestamp: number | undefined | null): string {
   const diffDays = expireDate.diff(now, 'day');
   
   if (diffDays < 0) {
-    return `已过期 ${Math.abs(diffDays)} 天`;
+    return t.value.accountInfo.expiredDays.replace('{days}', String(Math.abs(diffDays)));
   } else if (diffDays === 0) {
     const diffHours = expireDate.diff(now, 'hour');
     if (diffHours <= 0) {
-      return '即将到期';
+      return t.value.accountInfo.expiringSoon;
     }
-    return `剩余 ${diffHours} 小时`;
+    return t.value.accountInfo.remainingHours.replace('{hours}', String(diffHours));
   } else if (diffDays <= 7) {
-    return `剩余 ${diffDays} 天`;
+    return t.value.accountInfo.remainingDays.replace('{days}', String(diffDays));
   } else if (diffDays <= 30) {
-    return `剩余 ${diffDays} 天`;
+    return t.value.accountInfo.remainingDays.replace('{days}', String(diffDays));
   } else {
     const diffMonths = expireDate.diff(now, 'month');
     if (diffMonths >= 1) {
-      return `剩余 ${diffMonths} 个月`;
+      return t.value.accountInfo.remainingMonths.replace('{months}', String(diffMonths));
     }
-    return `剩余 ${diffDays} 天`;
+    return t.value.accountInfo.remainingDays.replace('{days}', String(diffDays));
   }
 }
 
@@ -925,7 +919,7 @@ function formatLargeNumber(num: number | undefined | null) {
 function formatStorageSize(bytes: number | undefined | null) {
   if (!bytes) return '0 GB';
   // 如果是很大的数（无限制），显示为"无限制"
-  if (bytes > 1000000000000) return '无限制';
+  if (bytes > 1000000000000) return t.value.accountInfo.unlimited;
   // 假设输入是KB，转换为GB
   const gb = bytes / 1024;
   return `${gb.toFixed(2)} GB`;
@@ -941,13 +935,13 @@ function formatApiLimit(limit: number | undefined | null) {
 
 // 格式化套餐名称
 function formatPlanName(name: string | undefined | null) {
-  if (!name) return '未知';
+  if (!name) return t.value.accountInfo.unknown;
   const names: Record<string, string> = {
-    'pro': 'Pro 专业版',
-    'teams': 'Teams 团队版',
-    'enterprise': 'Enterprise 企业版',
-    'free': 'Free 免费版',
-    'starter': 'Starter 入门版'
+    'pro': t.value.accountInfo.planPro,
+    'teams': t.value.accountInfo.planTeams,
+    'enterprise': t.value.accountInfo.planEnterprise,
+    'free': t.value.accountInfo.planFree,
+    'starter': t.value.accountInfo.planStarter
   };
   return names[name.toLowerCase()] || name;
 }
@@ -979,18 +973,18 @@ function formatFirebaseTimestamp(timestamp: string | number | null | undefined) 
 
 // 格式化认证提供商名称
 function formatProviderName(providerId: string | null | undefined) {
-  if (!providerId) return '未知';
+  if (!providerId) return t.value.accountInfo.unknown;
   
   const providerNames: Record<string, string> = {
-    'password': '邮箱/密码',
+    'password': t.value.accountInfo.providerEmail,
     'google.com': 'Google',
     'facebook.com': 'Facebook',
     'twitter.com': 'Twitter',
     'github.com': 'GitHub',
     'apple.com': 'Apple',
     'microsoft.com': 'Microsoft',
-    'phone': '手机号',
-    'anonymous': '匿名'
+    'phone': t.value.accountInfo.providerPhone,
+    'anonymous': t.value.accountInfo.providerAnonymous
   };
   
   return providerNames[providerId.toLowerCase()] || providerId;
@@ -999,24 +993,25 @@ function formatProviderName(providerId: string | null | undefined) {
 // 复制推荐链接
 async function copyReferralLink(referralCode: string | undefined) {
   if (!referralCode) {
-    ElMessage.warning('推荐码不存在');
+    ElMessage.warning(t.value.accountInfo.referralCodeNotFound);
     return;
   }
   
   const referralLink = `https://windsurf.com/refer?referral_code=${referralCode}`;
-  await copyText(referralLink, '推荐链接已复制到剪贴板');
+  await copyText(referralLink, t.value.accountInfo.referralLinkCopied);
 }
 
 // 通用复制函数
-async function copyText(text: string | undefined, message: string = '内容已复制') {
+async function copyText(text: string | undefined, message: string | undefined = undefined) {
   if (!text) {
-    ElMessage.warning('无可复制内容');
+    ElMessage.warning(t.value.accountInfo.noContentToCopy);
     return;
   }
+  const msg = message || t.value.accountInfo.contentCopied;
   
   try {
     await navigator.clipboard.writeText(text);
-    ElMessage.success(message);
+    ElMessage.success(msg);
   } catch (err) {
     // 如果 Clipboard API 失败，使用备用方法
     const textarea = document.createElement('textarea');
@@ -1027,7 +1022,7 @@ async function copyText(text: string | undefined, message: string = '内容已�
     textarea.select();
     document.execCommand('copy');
     document.body.removeChild(textarea);
-    ElMessage.success(message);
+    ElMessage.success(msg);
   }
 }
 
@@ -1136,21 +1131,21 @@ const quotaPercentage = computed(() => {
 
 // 格式化团队层级 (对应 codeium_common_pb.TeamsTier 枚举)
 function formatTeamsTier(tier: number | undefined | null) {
-  if (!tier) return '未指定';
+  if (!tier) return t.value.accountInfo.tierUnspecified;
   const tiers: Record<number, string> = {
-    0: '未指定',
-    1: 'Teams 团队版',
-    2: 'Pro 专业版',
-    3: 'Enterprise SaaS',
-    4: 'Hybrid 混合版',
-    5: 'Enterprise 自托管',
-    6: 'Pro 候补',
-    7: 'Teams Ultimate',
-    8: 'Pro Ultimate',
-    9: 'Trial 试用',
-    10: 'Enterprise 自助'
+    0: t.value.accountInfo.tierUnspecified,
+    1: t.value.accountInfo.tierTeams,
+    2: t.value.accountInfo.tierPro,
+    3: t.value.accountInfo.tierEnterpriseSaaS,
+    4: t.value.accountInfo.tierHybrid,
+    5: t.value.accountInfo.tierEnterpriseSelfManaged,
+    6: t.value.accountInfo.tierProWaitlist,
+    7: t.value.accountInfo.tierTeamsUltimate,
+    8: t.value.accountInfo.tierProUltimate,
+    9: t.value.accountInfo.tierTrial,
+    10: t.value.accountInfo.tierEnterpriseSelfServe
   };
-  return tiers[tier] || `级别 ${tier}`;
+  return tiers[tier] || `Tier ${tier}`;
 }
 
 // 获取团队层级标签类型
@@ -1169,14 +1164,14 @@ function getTeamsTierType(tier: number | undefined | null): 'primary' | 'success
 
 // 格式化用户团队状态 (对应 codeium_common_pb.UserTeamStatus 枚举)
 function formatTeamStatus(status: number | undefined | null) {
-  if (status === undefined || status === null) return '未知';
+  if (status === undefined || status === null) return t.value.accountInfo.statusUnknown;
   const statuses: Record<number, string> = {
-    0: '未指定',
-    1: '待审批',
-    2: '已批准',
-    3: '已拒绝'
+    0: t.value.accountInfo.tierUnspecified,
+    1: t.value.accountInfo.statusPending,
+    2: t.value.accountInfo.statusApproved,
+    3: t.value.accountInfo.statusRejected
   };
-  return statuses[status] || `状态 ${status}`;
+  return statuses[status] || `Status ${status}`;
 }
 
 // 获取用户团队状态标签类型

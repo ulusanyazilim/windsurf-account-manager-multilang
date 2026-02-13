@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="visible"
-    title="标签管理"
+    :title="t.accounts.tags"
     width="600px"
     :close-on-click-modal="false"
     @close="handleClose"
@@ -182,6 +182,7 @@ import { ref, reactive, computed } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Edit, Delete } from '@element-plus/icons-vue';
 import { useSettingsStore, useAccountsStore } from '@/store';
+import { useI18n } from '@/composables/useI18n';
 import type { GlobalTag } from '@/types';
 
 const props = defineProps<{
@@ -196,6 +197,7 @@ const emit = defineEmits<{
 
 const settingsStore = useSettingsStore();
 const accountsStore = useAccountsStore();
+const { t } = useI18n();
 
 const visible = computed({
   get: () => props.modelValue,

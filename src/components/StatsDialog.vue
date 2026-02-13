@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showStatsDialog"
-    title="统计信息"
+    :title="t.menu.stats"
     width="700px"
   >
     <div v-if="loading" class="loading-container">
@@ -92,9 +92,11 @@ import { ElMessage } from 'element-plus';
 import { Loading, Refresh } from '@element-plus/icons-vue';
 import { useUIStore } from '@/store';
 import { settingsApi } from '@/api';
+import { useI18n } from '@/composables/useI18n';
 import dayjs from 'dayjs';
 
 const uiStore = useUIStore();
+const { t } = useI18n();
 
 const loading = ref(false);
 const stats = ref<any>(null);

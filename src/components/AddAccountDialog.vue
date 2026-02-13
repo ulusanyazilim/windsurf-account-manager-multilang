@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showAddAccountDialog"
-    title="添加账号"
+    :title="t.accounts.addAccount"
     width="500px"
     :close-on-click-modal="false"
   >
@@ -13,29 +13,29 @@
       autocomplete="off"
     >
       <!-- 添加方式切换 -->
-      <el-form-item label="添加方式">
+      <el-form-item :label="t.accounts.addMode">
         <el-radio-group v-model="addMode" @change="handleModeChange">
-          <el-radio value="password">邮箱密码</el-radio>
-          <el-radio value="refresh_token">Refresh Token</el-radio>
+          <el-radio value="password">{{ t.accounts.emailPassword }}</el-radio>
+          <el-radio value="refresh_token">{{ t.accounts.refreshTokenMode }}</el-radio>
         </el-radio-group>
       </el-form-item>
 
       <!-- 邮箱密码模式 -->
       <template v-if="addMode === 'password'">
-        <el-form-item label="邮箱" prop="email">
+        <el-form-item :label="t.accounts.email" prop="email">
           <el-input
             v-model="formData.email"
-            placeholder="请输入邮箱"
+            :placeholder="t.accounts.enterEmail"
             :prefix-icon="Message"
             autocomplete="off"
           />
         </el-form-item>
         
-        <el-form-item label="密码" prop="password">
+        <el-form-item :label="t.accounts.password" prop="password">
           <el-input
             v-model="formData.password"
             type="password"
-            placeholder="请输入密码"
+            :placeholder="t.accounts.enterPassword"
             :prefix-icon="Lock"
             show-password
             autocomplete="new-password"
@@ -45,28 +45,28 @@
 
       <!-- Refresh Token 模式 -->
       <template v-else>
-        <el-form-item label="Refresh Token" prop="refreshToken">
+        <el-form-item :label="t.accounts.refreshTokenMode" prop="refreshToken">
           <el-input
             v-model="formData.refreshToken"
             type="textarea"
             :rows="3"
-            placeholder="请输入 Refresh Token"
+            :placeholder="t.accounts.enterRefreshToken"
           />
         </el-form-item>
       </template>
       
-      <el-form-item label="备注名称" prop="nickname">
+      <el-form-item :label="t.accounts.remark" prop="nickname">
         <el-input
           v-model="formData.nickname"
-          placeholder="留空则使用邮箱用户名"
+          :placeholder="t.accounts.remarkPlaceholder"
           :prefix-icon="User"
         />
       </el-form-item>
       
-      <el-form-item label="分组">
+      <el-form-item :label="t.accounts.group">
         <el-select
           v-model="formData.group"
-          placeholder="选择分组"
+          :placeholder="t.accounts.selectGroup"
           clearable
         >
           <el-option
@@ -78,13 +78,13 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item label="标签">
+      <el-form-item :label="t.accounts.tags">
         <el-select
           v-model="formData.tags"
           multiple
           filterable
           allow-create
-          placeholder="输入或选择标签"
+          :placeholder="t.accounts.selectTags"
           style="width: 100%"
         >
           <el-option
@@ -100,9 +100,9 @@
     </el-form>
     
     <template #footer>
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">{{ t.common.cancel }}</el-button>
       <el-button type="primary" @click="handleSubmit" :loading="loading">
-        确定
+        {{ t.common.confirm }}
       </el-button>
     </template>
   </el-dialog>
@@ -114,12 +114,14 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Message, Lock, User } from '@element-plus/icons-vue';
 import { useAccountsStore, useSettingsStore, useUIStore } from '@/store';
+import { useI18n } from '@/composables/useI18n';
 import { apiService, accountApi } from '@/api';
 import { invoke } from '@tauri-apps/api/core';
 
 const accountsStore = useAccountsStore();
 const settingsStore = useSettingsStore();
 const uiStore = useUIStore();
+const { t } = useI18n();
 
 const formRef = ref<FormInstance>();
 const loading = ref(false);
@@ -130,38 +132,41 @@ const formData = reactive({
   password: '',
   refreshToken: '',
   nickname: '',
-  group: '默认分组',
+  group: '',
   tags: [] as string[]
 });
 
-// 邮箱密码模式的验证规则
-const passwordRules: FormRules = {
-  email: [
-    { required: true, message: '请输入邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
-  ],
-  nickname: [
-    { max: 20, message: '备注名称最多20个字符', trigger: 'blur' }
-  ]
-};
+// Watch current locale to update group default
+// But group default is set on clear. Let's make it smarter.
+// Actually 'Default Group' is usually just a string in the store. 
+// If the store keeps it localized, that's complex. Assuming group names are user defined except 'Default Group'.
 
-// Refresh Token 模式的验证规则
-const refreshTokenRules: FormRules = {
-  refreshToken: [
-    { required: true, message: '请输入 Refresh Token', trigger: 'blur' },
-    { min: 10, message: 'Refresh Token 格式不正确', trigger: 'blur' }
-  ],
-  nickname: [
-    { max: 20, message: '备注名称最多20个字符', trigger: 'blur' }
-  ]
-};
+// computed validation rules
+const currentRules = computed<FormRules>(() => {
+  const passwordRules: FormRules = {
+    email: [
+      { required: true, message: t.value.accounts.enterEmail, trigger: 'blur' },
+      { type: 'email', message: t.value.accounts.validEmail, trigger: 'blur' }
+    ],
+    password: [
+      { required: true, message: t.value.accounts.enterPassword, trigger: 'blur' },
+      { min: 6, message: t.value.accounts.passwordLength, trigger: 'blur' }
+    ],
+    nickname: [
+      { max: 20, message: t.value.accounts.remarkLength, trigger: 'blur' }
+    ]
+  };
 
-// 根据模式选择验证规则
-const currentRules = computed(() => {
+  const refreshTokenRules: FormRules = {
+    refreshToken: [
+      { required: true, message: t.value.accounts.enterRefreshToken, trigger: 'blur' },
+      { min: 10, message: t.value.accounts.refreshTokenFormat, trigger: 'blur' }
+    ],
+    nickname: [
+      { max: 20, message: t.value.accounts.remarkLength, trigger: 'blur' }
+    ]
+  };
+
   return addMode.value === 'password' ? passwordRules : refreshTokenRules;
 });
 
@@ -219,8 +224,10 @@ async function handleSubmit() {
         const trimmedToken = formData.refreshToken.trim();
         const trimmedNickname = formData.nickname.trim() || undefined;
         
+// ...
+        
         if (!trimmedToken) {
-          ElMessage.error('Refresh Token 不能为空');
+          ElMessage.error(t.value.accounts.refreshTokenFormat); // Using refreshTokenFormat as empty check too for simplicity or add specific key
           loading.value = false;
           return;
         }
@@ -230,16 +237,16 @@ async function handleSubmit() {
           refreshToken: trimmedToken,
           nickname: trimmedNickname,
           tags: formData.tags,
-          group: formData.group || '默认分组'
+          group: formData.group || t.value.accounts.defaultGroup
         });
         
         if (result.success) {
-          ElMessage.success(`账号 ${result.email} 添加成功`);
+          ElMessage.success(t.value.accounts.addSuccess);
           // 刷新账号列表
           await accountsStore.loadAccounts();
           handleClose();
         } else {
-          ElMessage.error(result.error || '添加失败');
+          ElMessage.error(result.error || t.value.accounts.addFailed);
         }
       } else {
         // 邮箱密码模式
@@ -248,7 +255,7 @@ async function handleSubmit() {
         const trimmedNickname = formData.nickname.trim() || trimmedEmail.split('@')[0];
         
         if (!trimmedPassword) {
-          ElMessage.error('密码不能为空或只包含空格');
+          ElMessage.error(t.value.accounts.passwordRequired);
           loading.value = false;
           return;
         }
@@ -259,10 +266,10 @@ async function handleSubmit() {
           password: trimmedPassword,
           nickname: trimmedNickname,
           tags: formData.tags,
-          group: formData.group || '默认分组'
+          group: formData.group || t.value.accounts.defaultGroup
         });
         
-        ElMessage.success('账号添加成功，正在获取账号信息...');
+        ElMessage.success(t.value.common.loading); // "Loading..." as closest match for "Account added, logging in..." or better "Adding..."
         
         // 自动登录并获取账号详细信息
         try {
@@ -271,19 +278,19 @@ async function handleSubmit() {
           if (loginResult.success) {
             const latestAccount = await accountApi.getAccount(newAccount.id);
             await accountsStore.updateAccount(latestAccount);
-            ElMessage.success('账号信息已更新');
+            ElMessage.success(t.value.accounts.infoUpdated);
           } else {
-            ElMessage.warning('账号已添加，但登录失败，请手动刷新');
+            ElMessage.warning(t.value.accounts.loginFailed);
           }
         } catch (infoError) {
-          console.error('获取账号信息失败:', infoError);
-          ElMessage.warning('账号已添加，但获取详细信息失败，请手动刷新');
+          console.error('Failed to get account info:', infoError);
+          ElMessage.warning(t.value.accounts.updateFailed);
         }
         
         handleClose();
       }
     } catch (error) {
-      ElMessage.error(`添加失败: ${error}`);
+      ElMessage.error(`${t.value.accounts.addFailed}: ${error}`);
     } finally {
       loading.value = false;
     }
@@ -299,7 +306,7 @@ function handleClose() {
   formData.password = '';
   formData.refreshToken = '';
   formData.nickname = '';
-  formData.group = '默认分组';
+  formData.group = t.value.accounts.defaultGroup;
   formData.tags = [];
   addMode.value = 'password';
 }

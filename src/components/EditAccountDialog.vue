@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     v-model="uiStore.showEditAccountDialog"
-    title="编辑账号"
+    :title="t.accounts.editAccount"
     width="500px"
     :close-on-click-modal="false"
   >
@@ -13,7 +13,7 @@
       label-width="100px"
       autocomplete="off"
     >
-      <el-form-item label="邮箱">
+      <el-form-item :label="t.accounts.email">
         <el-input
           v-model="formData.email"
           disabled
@@ -22,38 +22,38 @@
         />
       </el-form-item>
       
-      <el-form-item label="备注名称" prop="nickname">
+      <el-form-item :label="t.accounts.remark" prop="nickname">
         <el-input
           v-model="formData.nickname"
-          placeholder="请输入备注名称"
+          :placeholder="t.accounts.remarkPlaceholder"
           :prefix-icon="User"
         />
       </el-form-item>
       
-      <el-form-item label="修改密码" prop="newPassword">
+      <el-form-item :label="t.accounts.changePassword" prop="newPassword">
         <el-input 
           v-model="formData.newPassword" 
           type="password"
-          placeholder="留空则不修改密码"
+          :placeholder="t.accounts.leaveBlankForNoChange"
           show-password
           autocomplete="new-password"
         />
       </el-form-item>
       
-      <el-form-item label="确认密码" prop="confirmPassword" v-if="formData.newPassword">
+      <el-form-item :label="t.accounts.confirmPassword" prop="confirmPassword" v-if="formData.newPassword">
         <el-input 
           v-model="formData.confirmPassword" 
           type="password"
-          placeholder="请再次输入密码"
+          :placeholder="t.accounts.enterPasswordAgain"
           show-password
           autocomplete="new-password"
         />
       </el-form-item>
       
-      <el-form-item label="分组">
+      <el-form-item :label="t.accounts.group">
         <el-select
           v-model="formData.group"
-          placeholder="选择分组"
+          :placeholder="t.accounts.selectGroup"
           clearable
         >
           <el-option
@@ -65,13 +65,13 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item label="标签">
+      <el-form-item :label="t.accounts.tags">
         <el-select
           v-model="formData.tags"
           multiple
           filterable
           allow-create
-          placeholder="输入或选择标签"
+          :placeholder="t.accounts.selectTags"
           style="width: 100%"
           @change="handleTagsChange"
         >
@@ -92,7 +92,7 @@
         </el-select>
       </el-form-item>
       
-      <el-form-item label="标签颜色" v-if="formData.tags.length > 0">
+      <el-form-item :label="t.accounts.tagColor" v-if="formData.tags.length > 0">
         <TagColorPicker
           :tags="formData.tags"
           v-model:tagColors="formData.tagColors"
@@ -101,9 +101,9 @@
     </el-form>
     
     <template #footer>
-      <el-button @click="handleClose">取消</el-button>
+      <el-button @click="handleClose">{{ t.common.cancel }}</el-button>
       <el-button type="primary" @click="handleSubmit" :loading="loading">
-        保存
+        {{ t.common.save }}
       </el-button>
     </template>
   </el-dialog>
@@ -116,11 +116,13 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { Message, User } from '@element-plus/icons-vue';
 import { useAccountsStore, useSettingsStore, useUIStore } from '@/store';
 import type { Account, TagWithColor } from '@/types';
+import { useI18n } from '@/composables/useI18n';
 import TagColorPicker from '@/components/TagColorPicker.vue';
 
 const accountsStore = useAccountsStore();
 const settingsStore = useSettingsStore();
 const uiStore = useUIStore();
+const { t } = useI18n();
 
 const formRef = ref<FormInstance>();
 const loading = ref(false);
@@ -154,24 +156,24 @@ watch(currentAccount, (account) => {
 
 const validatePassword = (_rule: any, value: any, callback: any) => {
   if (value && formData.newPassword && value !== formData.newPassword) {
-    callback(new Error('两次输入密码不一致'));
+    callback(new Error(t.value.accounts.passwordsDoNotMatch));
   } else {
     callback();
   }
 };
 
-const rules: FormRules = {
+const rules = computed<FormRules>(() => ({
   nickname: [
-    { required: true, message: '请输入备注名称', trigger: 'blur' },
-    { max: 20, message: '备注名称最多20个字符', trigger: 'blur' }
+    { required: true, message: t.value.accounts.remarkPlaceholder, trigger: 'blur' },
+    { max: 20, message: t.value.accounts.remarkLength, trigger: 'blur' }
   ],
   newPassword: [
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
+    { min: 6, message: t.value.accounts.passwordLength, trigger: 'blur' }
   ],
   confirmPassword: [
     { validator: validatePassword, trigger: 'blur' }
   ]
-};
+}));
 
 const availableTags = computed(() => {
   const tags = new Set<string>();
@@ -230,7 +232,7 @@ async function handleSubmit() {
       if (formData.newPassword) {
         const trimmedPassword = formData.newPassword.trim();
         if (!trimmedPassword) {
-          ElMessage.error('新密码不能为空或只包含空格');
+          ElMessage.error(t.value.accounts.newPasswordEmpty);
           loading.value = false;
           return;
         }
@@ -242,10 +244,10 @@ async function handleSubmit() {
       
       await accountsStore.updateAccount(updatedAccount);
       
-      ElMessage.success('账号更新成功');
+      ElMessage.success(t.value.accounts.updateSuccess);
       handleClose();
     } catch (error) {
-      ElMessage.error(`更新失败: ${error}`);
+      ElMessage.error(`${t.value.accounts.updateFailed}: ${error}`);
     } finally {
       loading.value = false;
     }

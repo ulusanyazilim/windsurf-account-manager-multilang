@@ -8,7 +8,7 @@ const host = process.env.TAURI_DEV_HOST;
 // https://vite.dev/config/
 export default defineConfig(async () => ({
   plugins: [vue()],
-  
+
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
@@ -26,14 +26,17 @@ export default defineConfig(async () => ({
     host: host || false,
     hmr: host
       ? {
-          protocol: "ws",
-          host,
-          port: 46953,
-        }
+        protocol: "ws",
+        host,
+        port: 46953,
+      }
       : undefined,
     watch: {
       // 3. tell Vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
     },
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
   },
 }));

@@ -37,11 +37,19 @@
         "type": "embedBootstrapper"
       },
       "wix": {
-        "language": "zh-CN"
+        "language": [
+          "en-US",
+          "zh-CN",
+          "tr-TR"
+        ]
       },
       "nsis": {
-        "languages": ["SimpChinese"],
-        "displayLanguageSelector": false
+        "languages": [
+          "English",
+          "SimpChinese",
+          "Turkish"
+        ],
+        "displayLanguageSelector": true
       }
     },
     "resources": {

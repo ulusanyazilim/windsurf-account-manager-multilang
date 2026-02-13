@@ -13,7 +13,7 @@
           <div class="header-icon">
             <el-icon><CreditCard /></el-icon>
           </div>
-          <h3 class="header-text">虚拟卡生成器</h3>
+          <h3 class="header-text">{{ t.menu.cardGenerator }}</h3>
         </div>
         <el-button :icon="Close" circle @click="visible = false" class="close-btn" />
       </div>
@@ -261,6 +261,9 @@ import {
   Key,
   Tickets
 } from '@element-plus/icons-vue';
+import { useI18n } from '@/composables/useI18n';
+
+const { t } = useI18n();
 
 interface BinConfig {
   prefix: string;
