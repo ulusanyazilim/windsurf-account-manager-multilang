@@ -299,3 +299,39 @@ AGPL-3.0
 ## 免责声明
 
 本工具仅供学习和个人使用，请遵守Windsurf服务条款。作者不对因使用本工具产生的任何问题负责。
+
+## 🌍 Localization & Credits / Yerelleştirme ve Teşekkür / 本地化与致谢
+
+### English
+This multi-language version (English, Turkish, Default Chinese) was developed by **@ulusanyazilim**. 
+We would like to extend our sincere thanks to the original creators of this repository.
+
+For support, help, or inquiries, you can reach us at:
+- 📧 `teknosenator@gmail.com`
+- 📧 `ulusanyazilim@gmail.com`
+
+🔗 **Repository:** [https://github.com/ulusanyazilim/windsurf-account-manager-multilang](https://github.com/ulusanyazilim/windsurf-account-manager-multilang)
+
+---
+
+### Türkçe
+Bu çok dilli versiyon (İngilizce, Türkçe, Varsayılan Çince) **@ulusanyazilim** tarafından geliştirilmiştir.
+Orijinal depo sahiplerine emekleri için teşekkür ederiz.
+
+Destek, yardım veya sorularınız için bize şu adreslerden ulaşabilirsiniz:
+- 📧 `teknosenator@gmail.com`
+- 📧 `ulusanyazilim@gmail.com`
+
+🔗 **Repo:** [https://github.com/ulusanyazilim/windsurf-account-manager-multilang](https://github.com/ulusanyazilim/windsurf-account-manager-multilang)
+
+---
+
+### 简体中文
+此多语言版本（英语、土耳其语、默认中文）由 **@ulusanyazilim** 开发。
+我们要向本仓库的原作者致以诚挚的谢意。
+
+如需支持、帮助或咨询，请通过以下方式联系我们：
+- 📧 `teknosenator@gmail.com`
+- 📧 `ulusanyazilim@gmail.com`
+
+🔗 **仓库地址:** [https://github.com/ulusanyazilim/windsurf-account-manager-multilang](https://github.com/ulusanyazilim/windsurf-account-manager-multilang)
