@@ -11,7 +11,7 @@
       <!-- 标签页 -->
       <el-tabs v-model="activeTab" type="border-card">
         <!-- 团队成员列表 -->
-        <el-tab-pane label="团队成员" name="members">
+        <el-tab-pane :label="t.team.members" name="members">
           <!-- 邀请链接区域 -->
           <div v-if="teamInviteId" class="invite-link-section">
             <div class="invite-link-label">
@@ -62,7 +62,7 @@
           </div>
           
           <el-table :data="members" style="width: 100%" max-height="400" class="member-table">
-            <el-table-column label="名称 & 邮箱" min-width="220">
+            <el-table-column :label="t.team.nameEmail" min-width="220">
               <template #default="{ row }">
                 <div class="member-cell">
                   <div class="member-cell-name">
@@ -73,24 +73,24 @@
                 </div>
               </template>
             </el-table-column>
-            <el-table-column label="最后使用" width="120" align="center">
+            <el-table-column :label="t.team.lastUsed" width="120" align="center">
               <template #default="{ row }">
                 <span class="time-text">{{ formatLastUsed(row.last_update_time) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="已用积分" width="100" align="center">
+            <el-table-column :label="t.team.usedCredits" width="100" align="center">
               <template #default="{ row }">
                 <span>{{ Math.floor((row.prompts_used || 0) / 100) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="禁用访问" width="90" align="center">
+            <el-table-column :label="t.team.disableAccess" width="90" align="center">
               <template #default="{ row }">
                 <el-tag :type="row.disable_codeium ? 'danger' : 'success'" size="small">
                   {{ row.disable_codeium ? '是' : '否' }}
                 </el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="180" fixed="right" align="center">
+            <el-table-column :label="t.team.actions" width="180" fixed="right" align="center">
               <template #default="{ row }">
                 <el-button type="info" size="small" text @click="openMemberDetail(row)">
                   编辑
@@ -122,7 +122,7 @@
         </el-tab-pane>
         
         <!-- 待处理邀请 -->
-        <el-tab-pane label="待处理邀请" name="invitations">
+        <el-tab-pane :label="t.team.pendingInvitations" name="invitations">
           <div class="tab-header">
             <el-button size="small" @click="loadPendingInvitations">
               <el-icon><Refresh /></el-icon>
@@ -133,12 +133,12 @@
           <el-table :data="pendingInvitations" style="width: 100%" max-height="400">
             <el-table-column prop="name" label="名称" width="150" />
             <el-table-column prop="email" label="邮箱" min-width="200" />
-            <el-table-column prop="created_at" label="邀请时间" width="180">
+            <el-table-column prop="created_at" :label="t.team.inviteTime" width="180">
               <template #default="{ row }">
                 {{ formatTime(row.created_at) }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="100" fixed="right">
+            <el-table-column :label="t.team.actions" width="100" fixed="right">
               <template #default="{ row }">
                 <el-popconfirm
                   title="确定要撤销该邀请吗？"
@@ -162,13 +162,13 @@
         </el-tab-pane>
         
         <!-- 我的邀请（普通用户） -->
-        <el-tab-pane label="我的邀请" name="my-invitation">
+        <el-tab-pane :label="t.team.myInvitations" name="my-invitation">
           <div class="my-invitation-section">
             <div v-if="myInvitation" class="invitation-card">
               <div class="invitation-info">
-                <h3>您收到了团队邀请</h3>
-                <p><strong>团队名称:</strong> {{ myInvitation.team_name || '未知团队' }}</p>
-                <p><strong>邀请人:</strong> {{ myInvitation.admin_name || '管理员' }}</p>
+                <h3>{{ t.team.receivedInvite }}</h3>
+                <p><strong>{{ t.team.teamName }}:</strong> {{ myInvitation.team_name || t.team.unknown }}</p>
+                <p><strong>{{ t.team.inviter }}:</strong> {{ myInvitation.admin_name || t.team.admin }}</p>
               </div>
               <div class="invitation-actions">
                 <el-button type="primary" @click="acceptInvitation">
@@ -190,7 +190,7 @@
         </el-tab-pane>
 
         <!-- 申请加入团队 -->
-        <el-tab-pane label="申请加入" name="join-team">
+        <el-tab-pane :label="t.team.joinTeam" name="join-team">
           <div class="join-team-section">
             <el-alert
               title="通过邀请链接加入团队"
@@ -201,10 +201,10 @@
               style="margin-bottom: 20px"
             />
             <el-form :model="joinForm" label-width="100px">
-              <el-form-item label="邀请链接ID">
+              <el-form-item :label="t.team.inputInviteId">
                 <el-input
                   v-model="joinForm.inviteId"
-                  placeholder="输入邀请ID（UUID格式）"
+                  :placeholder="t.team.inputInviteId"
                   clearable
                 />
               </el-form-item>
@@ -218,7 +218,7 @@
         </el-tab-pane>
 
         <!-- 待审批申请（管理员） -->
-        <el-tab-pane label="待审批" name="pending-requests">
+        <el-tab-pane :label="t.team.pendingApprovals" name="pending-requests">
           <div class="tab-header">
             <el-button size="small" @click="loadTeamMembers">
               <el-icon><Refresh /></el-icon>
@@ -229,18 +229,18 @@
           <el-table :data="pendingMembers" style="width: 100%" max-height="400">
             <el-table-column prop="name" label="名称" width="150" />
             <el-table-column prop="email" label="邮箱" min-width="200" />
-            <el-table-column prop="status" label="状态" width="100">
+            <el-table-column prop="status" :label="t.team.status" width="100">
               <template #default>
-                <el-tag type="warning" size="small">待审批</el-tag>
+                <el-tag type="warning" size="small">{{ t.team.pendingApprovals }}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="160" fixed="right">
+            <el-table-column :label="t.team.actions" width="160" fixed="right">
               <template #default="{ row }">
                 <el-button type="success" size="small" text @click="approveJoinRequest(row, 'approve')">
-                  同意
+                  {{ t.team.approve }}
                 </el-button>
                 <el-button type="danger" size="small" text @click="approveJoinRequest(row, 'reject')">
-                  拒绝
+                  {{ t.team.reject }}
                 </el-button>
               </template>
             </el-table-column>
@@ -264,11 +264,11 @@
       <el-form :model="inviteForm" label-width="60px">
         <div v-for="(user, index) in inviteForm.users" :key="index" class="invite-user-row">
           <div class="invite-user-fields">
-            <el-form-item label="名称">
-              <el-input v-model="user.name" placeholder="成员名称" />
+            <el-form-item :label="t.team.name">
+              <el-input v-model="user.name" :placeholder="t.team.enterName" />
             </el-form-item>
-            <el-form-item label="邮箱">
-              <el-input v-model="user.email" placeholder="成员邮箱" />
+            <el-form-item :label="t.team.email">
+              <el-input v-model="user.email" :placeholder="t.team.enterEmail" />
             </el-form-item>
           </div>
           <el-button
@@ -289,16 +289,16 @@
         <!-- 自动加入开关 -->
         <div class="auto-join-section">
           <el-switch v-model="autoJoinEnabled" />
-          <span class="auto-join-label">自动加入</span>
-          <el-tooltip content="邀请后，如果成员邮箱在账号管理器中，将自动接受邀请加入团队" placement="top">
+          <span class="auto-join-label">{{ t.team.autoJoin }}</span>
+          <el-tooltip :content="t.team.autoJoinTip" placement="top">
             <el-icon class="help-icon"><QuestionFilled /></el-icon>
           </el-tooltip>
         </div>
       </el-form>
       <template #footer>
-        <el-button @click="showInviteDialog = false">取消</el-button>
+        <el-button @click="showInviteDialog = false">{{ t.common.cancel }}</el-button>
         <el-button type="primary" :loading="inviting" @click="submitInvite">
-          {{ autoJoinEnabled ? '邀请并自动加入' : '发送邀请' }}
+          {{ autoJoinEnabled ? t.team.inviteAndJoin : t.team.sendInvite }}
         </el-button>
       </template>
     </el-dialog>
@@ -320,20 +320,20 @@
         style="margin-bottom: 20px"
       />
       <el-form :model="transferForm" label-width="100px" autocomplete="off">
-        <el-form-item label="目标邮箱" required>
+        <el-form-item :label="t.team.targetEmail" required>
           <el-input
             v-model="transferForm.email"
-            placeholder="输入接收订阅的用户邮箱"
+            :placeholder="t.team.enterEmail"
             clearable
             name="transfer-target-email-no-autofill"
             autocomplete="off"
             data-form-type="other"
           />
         </el-form-item>
-        <el-form-item label="用户名称">
+        <el-form-item :label="t.team.targetName">
           <el-input
             v-model="transferForm.name"
-            placeholder="可选，用户名称"
+            :placeholder="t.team.enterName"
             clearable
             name="transfer-target-name-no-autofill"
             autocomplete="off"
@@ -354,9 +354,9 @@
       </div>
       
       <template #footer>
-        <el-button @click="showTransferDialog = false" :disabled="transferring">取消</el-button>
+        <el-button @click="showTransferDialog = false" :disabled="transferring">{{ t.common.cancel }}</el-button>
         <el-button type="danger" :loading="transferring" @click="executeTransfer">
-          确认转让
+          {{ t.team.confirmTransfer }}
         </el-button>
       </template>
     </el-dialog>
@@ -387,7 +387,7 @@
         <el-divider />
         
         <el-form label-width="120px" class="detail-form">
-          <el-form-item label="API Key">
+          <el-form-item :label="t.team.apiKey">
             <el-input 
               :value="selectedMember.api_key" 
               readonly 
@@ -402,25 +402,25 @@
             </el-input>
           </el-form-item>
           
-          <el-form-item label="注册时间">
+          <el-form-item :label="t.team.signUpTime">
             <span class="info-value">{{ formatSignUpTime(selectedMember.sign_up_time) }}</span>
           </el-form-item>
           
-          <el-form-item label="角色">
+          <el-form-item :label="t.team.role">
             <el-select v-model="memberDetailForm.role" style="width: 200px" size="default">
-              <el-option label="普通用户" value="User" />
-              <el-option label="管理员" value="Admin" />
+              <el-option :label="t.team.user" value="User" />
+              <el-option :label="t.team.admin" value="Admin" />
             </el-select>
           </el-form-item>
           
-          <el-form-item label="禁用访问">
+          <el-form-item :label="t.team.disableAccess">
             <el-switch 
               v-model="memberDetailForm.disableAccess"
               active-text="已禁用"
               inactive-text=""
               style="--el-switch-on-color: #f56c6c"
             />
-            <div class="form-tip">禁用后该成员将无法使用 Windsurf，且不占用席位</div>
+            <div class="form-tip">{{ t.team.disableTip }}</div>
           </el-form-item>
         </el-form>
       </div>
@@ -428,10 +428,10 @@
       <template #footer>
         <div class="dialog-footer">
           <el-button type="danger" plain @click="handleRemoveMember" :loading="memberDetailLoading">
-            移除成员
+            {{ t.team.remove }}
           </el-button>
           <el-button type="primary" @click="saveMemberDetail" :loading="memberDetailLoading">
-            保存修改
+            {{ t.common.save }}
           </el-button>
         </div>
       </template>
@@ -444,6 +444,7 @@ import { ref, watch, computed } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Refresh, Delete, Link, CopyDocument, QuestionFilled, RefreshRight, Switch } from '@element-plus/icons-vue'
+import { useI18n } from '@/composables/useI18n'
 
 interface Props {
   modelValue: boolean
@@ -452,6 +453,8 @@ interface Props {
 
 const props = defineProps<Props>()
 const emit = defineEmits(['update:modelValue'])
+
+const { t } = useI18n()
 
 const dialogVisible = computed({
   get: () => props.modelValue,

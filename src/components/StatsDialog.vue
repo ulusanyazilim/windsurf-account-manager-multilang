@@ -11,13 +11,13 @@
     <div v-else-if="stats">
       <el-row :gutter="20">
         <el-col :span="8">
-          <el-statistic title="账号总数" :value="stats.total_accounts" />
+          <el-statistic :title="t.stats.totalAccounts" :value="stats.total_accounts" />
         </el-col>
         <el-col :span="8">
-          <el-statistic title="活跃账号" :value="stats.active_accounts" />
+          <el-statistic :title="t.stats.activeAccounts" :value="stats.active_accounts" />
         </el-col>
         <el-col :span="8">
-          <el-statistic title="分组数量" :value="stats.groups" />
+          <el-statistic :title="t.stats.groupCount" :value="stats.groups" />
         </el-col>
       </el-row>
       
@@ -26,24 +26,24 @@
       <el-row :gutter="20">
         <el-col :span="12">
           <el-statistic 
-            title="操作成功率" 
+            :title="t.stats.successRate" 
             :value="stats.success_rate" 
             suffix="%" 
             :precision="1"
           />
           <div class="stat-detail">
-            成功: {{ stats.successful_operations }} / 失败: {{ stats.failed_operations }}
+            {{ t.stats.successful }}: {{ stats.successful_operations }} / {{ t.stats.failed }}: {{ stats.failed_operations }}
           </div>
         </el-col>
         <el-col :span="12">
           <el-statistic 
-            title="积分重置成功率" 
+            :title="t.stats.resetSuccessRate" 
             :value="stats.reset_success_rate" 
             suffix="%" 
             :precision="1"
           />
           <div class="stat-detail">
-            成功: {{ stats.successful_resets }} / 失败: {{ stats.failed_resets }}
+            {{ t.stats.successful }}: {{ stats.successful_resets }} / {{ t.stats.failed }}: {{ stats.failed_resets }}
           </div>
         </el-col>
       </el-row>
@@ -51,37 +51,37 @@
       <el-divider />
       
       <el-descriptions :column="1" border>
-        <el-descriptions-item label="总操作次数">
+        <el-descriptions-item :label="t.stats.totalOperations">
           {{ stats.total_operations }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="总重置次数">
+        <el-descriptions-item :label="t.stats.totalResets">
           {{ stats.total_resets }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="最后操作时间">
-          {{ stats.last_operation ? formatDate(stats.last_operation) : '暂无' }}
+        <el-descriptions-item :label="t.stats.lastOperationTime">
+          {{ stats.last_operation ? formatDate(stats.last_operation) : t.stats.none }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="自动刷新Token">
+        <el-descriptions-item :label="t.stats.autoRefreshToken">
           <el-tag :type="stats.settings?.auto_refresh_token ? 'success' : 'info'">
-            {{ stats.settings?.auto_refresh_token ? '开启' : '关闭' }}
+            {{ stats.settings?.auto_refresh_token ? t.stats.enabled : t.stats.disabled }}
           </el-tag>
         </el-descriptions-item>
         
-        <el-descriptions-item label="重试次数">
+        <el-descriptions-item :label="t.stats.retryTimes">
           {{ stats.settings?.retry_times || 2 }}
         </el-descriptions-item>
         
-        <el-descriptions-item label="并发限制">
+        <el-descriptions-item :label="t.stats.concurrentLimit">
           {{ stats.settings?.concurrent_limit || 5 }}
         </el-descriptions-item>
       </el-descriptions>
     </div>
     
     <template #footer>
-      <el-button @click="refresh" :icon="Refresh">刷新</el-button>
-      <el-button @click="uiStore.closeStatsDialog">关闭</el-button>
+      <el-button @click="refresh" :icon="Refresh">{{ t.common.refresh }}</el-button>
+      <el-button @click="uiStore.closeStatsDialog">{{ t.common.close }}</el-button>
     </template>
   </el-dialog>
 </template>
@@ -118,7 +118,7 @@ async function loadStats() {
   try {
     stats.value = await settingsApi.getStats();
   } catch (error) {
-    ElMessage.error(`加载统计信息失败: ${error}`);
+    ElMessage.error(`${t.value.stats.loadingFailed}: ${error}`);
   } finally {
     loading.value = false;
   }

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-dialog
     v-model="visible"
     width="960px"
@@ -26,7 +26,7 @@
           <div class="section-icon">
             <el-icon><Collection /></el-icon>
           </div>
-          <span>卡BIN管理</span>
+          <span>{{ t.accounts.autoReset.cardGenerator.binManagement }}</span>
           <el-tag size="small" type="info" class="count-tag">{{ binList.length }}</el-tag>
         </div>
         
@@ -34,7 +34,7 @@
           <div class="form-row">
             <el-input
               v-model="newBin.prefix"
-              placeholder="BIN前缀 (如: 411111)"
+              :placeholder="t.accounts.autoReset.cardGenerator.binPrefixPlaceholder"
               size="default"
               class="bin-input"
             />
@@ -42,7 +42,7 @@
           <div class="form-row">
             <el-select
               v-model="newBin.type"
-              placeholder="卡类型"
+              :placeholder="t.accounts.autoReset.cardGenerator.cardType"
               size="default"
               class="type-select"
             >
@@ -53,7 +53,7 @@
               <el-option label="JCB" value="jcb" />
               <el-option label="UnionPay" value="unionpay" />
             </el-select>
-            <el-button type="primary" size="default" :icon="Plus" @click="addBin">添加</el-button>
+            <el-button type="primary" size="default" :icon="Plus" @click="addBin">{{ t.common.add }}</el-button>
           </div>
         </div>
         
@@ -73,8 +73,8 @@
                   <span class="bin-type-name">{{ getCardTypeName(bin.type) }}</span>
                 </div>
                 <div class="bin-meta">
-                  <span class="bin-digits"><el-icon><Postcard /></el-icon>{{ getCardDigits(bin.type) }}位</span>
-                  <span class="bin-cvc"><el-icon><Key /></el-icon>{{ getCvcDigits(bin.type) }}位</span>
+                  <span class="bin-digits"><el-icon><Postcard /></el-icon>{{ getCardDigits(bin.type) }}{{ t.accounts.autoReset.cardGenerator.digits }}</span>
+                  <span class="bin-cvc"><el-icon><Key /></el-icon>{{ getCvcDigits(bin.type) }}{{ t.accounts.autoReset.cardGenerator.digits }}</span>
                 </div>
               </div>
               <el-button
@@ -92,7 +92,7 @@
             <div class="empty-icon">
               <el-icon><CreditCard /></el-icon>
             </div>
-            <p>暂无BIN，请添加</p>
+            <p>{{ t.accounts.autoReset.cardGenerator.noBin }}</p>
           </div>
         </div>
       </div>
@@ -103,12 +103,12 @@
           <div class="section-icon">
             <el-icon><Cpu /></el-icon>
           </div>
-          <span>卡片生成</span>
+          <span>{{ t.accounts.autoReset.cardGenerator.cardGeneration }}</span>
         </div>
         
         <div class="generator-options">
           <div class="option-row">
-            <span class="option-label">生成数量</span>
+            <span class="option-label">{{ t.accounts.autoReset.cardGenerator.generateCount }}</span>
             <el-input-number
               v-model="generateCount"
               :min="1"
@@ -119,20 +119,20 @@
           </div>
           
           <div class="option-row">
-            <span class="option-label">姓名格式</span>
+            <span class="option-label">{{ t.accounts.autoReset.cardGenerator.nameFormat }}</span>
             <el-select v-model="nameFormat" size="small" class="full-width">
-              <el-option label="随机英文名" value="random" />
-              <el-option label="自定义姓名" value="custom" />
+              <el-option :label="t.accounts.autoReset.cardGenerator.randomName" value="random" />
+              <el-option :label="t.accounts.autoReset.cardGenerator.customName" value="custom" />
             </el-select>
           </div>
           
           <div class="option-row" v-if="nameFormat === 'custom'">
-            <span class="option-label">持卡人姓名</span>
-            <el-input v-model="customName" placeholder="如: JOHN DOE" size="small" class="full-width" />
+            <span class="option-label">{{ t.accounts.autoReset.cardGenerator.cardholderName }}</span>
+            <el-input v-model="customName" :placeholder="t.accounts.autoReset.cardGenerator.cardholderNamePlaceholder" size="small" class="full-width" />
           </div>
           
           <div class="option-row">
-            <span class="option-label">有效期年份</span>
+            <span class="option-label">{{ t.accounts.autoReset.cardGenerator.expiryYear }}</span>
             <el-input-number
               v-model="expiryYear"
               :min="currentYear"
@@ -143,7 +143,7 @@
           </div>
           
           <div class="option-row">
-            <span class="option-label">有效期月份</span>
+            <span class="option-label">{{ t.accounts.autoReset.cardGenerator.expiryMonth }}</span>
             <el-select v-model="expiryMonth" size="small" class="full-width">
               <el-option
                 v-for="m in 12"
@@ -163,7 +163,7 @@
             :disabled="selectedBinIndex === null"
             class="generate-btn"
           >
-            生成卡片
+            {{ t.accounts.autoReset.cardGenerator.generateBtn }}
           </el-button>
           <el-button
             :icon="DocumentCopy"
@@ -171,7 +171,7 @@
             :disabled="generatedCards.length === 0"
             class="action-btn"
           >
-            复制全部
+            {{ t.accounts.autoReset.cardGenerator.copyAll }}
           </el-button>
           <el-button
             :icon="Delete"
@@ -179,7 +179,7 @@
             :disabled="generatedCards.length === 0"
             class="action-btn"
           >
-            清空
+            {{ t.common.clear }}
           </el-button>
         </div>
         
@@ -188,7 +188,7 @@
           <div class="cards-header" v-if="generatedCards.length > 0">
             <div class="cards-header-left">
               <el-icon><Tickets /></el-icon>
-              <span>已生成 <strong>{{ generatedCards.length }}</strong> 张卡片</span>
+              <span>{{ t.accounts.autoReset.cardGenerator.generated }} <strong>{{ generatedCards.length }}</strong> {{ t.accounts.autoReset.cardGenerator.cards }}</span>
             </div>
             <div class="cards-header-right">
               <el-tag v-if="selectedBinIndex !== null" size="small" :type="getCardTypeTagType(binList[selectedBinIndex].type)">
@@ -236,7 +236,7 @@
               <div class="empty-icon">
                 <el-icon><Tickets /></el-icon>
               </div>
-              <p>选择BIN后点击“生成卡片”</p>
+              <p>{{ t.accounts.autoReset.cardGenerator.selectBinTip }}</p>
             </div>
           </div>
         </div>
@@ -261,7 +261,7 @@ import {
   Key,
   Tickets
 } from '@element-plus/icons-vue';
-import { useI18n } from '@/composables/useI18n';
+import { useI18n } from '@/composables/useI18n'
 
 const { t } = useI18n();
 
@@ -365,21 +365,21 @@ function getCardTypeTagType(type: string): '' | 'success' | 'info' | 'warning' |
 
 function addBin() {
   if (!newBin.value.prefix) {
-    ElMessage.warning('请输入BIN前缀');
+    ElMessage.warning(t.value.accounts.autoReset.cardGenerator.enterBinPrefix);
     return;
   }
   if (!/^\d{4,8}$/.test(newBin.value.prefix)) {
-    ElMessage.warning('BIN前缀应为4-8位数字');
+    ElMessage.warning(t.value.accounts.autoReset.cardGenerator.invalidBinPrefix);
     return;
   }
   if (binList.value.some(b => b.prefix === newBin.value.prefix)) {
-    ElMessage.warning('该BIN已存在');
+    ElMessage.warning(t.value.accounts.autoReset.cardGenerator.binExists);
     return;
   }
   binList.value.push({ ...newBin.value });
   newBin.value = { prefix: '', type: 'visa' };
   saveBinList();
-  ElMessage.success('BIN添加成功');
+  ElMessage.success(t.value.accounts.autoReset.cardGenerator.binAddSuccess);
 }
 
 function removeBin(index: number) {
@@ -456,7 +456,7 @@ function generateCvc(type: string): string {
 // 生成卡片
 function generateCards() {
   if (selectedBinIndex.value === null) {
-    ElMessage.warning('请先选择一个BIN');
+    ElMessage.warning(t.value.accounts.autoReset.cardGenerator.selectBinTip);
     return;
   }
   
@@ -476,7 +476,7 @@ function generateCards() {
   }
   
   generatedCards.value = cards;
-  ElMessage.success(`已生成 ${cards.length} 张卡片`);
+  ElMessage.success(`${t.value.accounts.autoReset.cardGenerator.generated} ${cards.length} ${t.value.accounts.autoReset.cardGenerator.cards}`);
 }
 
 // 格式化卡号显示
@@ -493,7 +493,7 @@ function formatCardNumber(number: string): string {
 function copyCard(card: GeneratedCard) {
   const text = `${card.number}|${card.expiry}|${card.cvc}|${card.name}`;
   navigator.clipboard.writeText(text);
-  ElMessage.success('已复制到剪贴板');
+  ElMessage.success(t.value.common.copiedClipboard);
 }
 
 // 复制全部卡片
@@ -502,7 +502,7 @@ function copyAllCards() {
     .map(card => `${card.number}|${card.expiry}|${card.cvc}|${card.name}`)
     .join('\n');
   navigator.clipboard.writeText(text);
-  ElMessage.success(`已复制 ${generatedCards.value.length} 张卡片`);
+  ElMessage.success(`${t.value.common.copiedClipboard} ${generatedCards.value.length} ${t.value.accounts.autoReset.cardGenerator.cards}`);
 }
 
 // 清空卡片
@@ -1197,3 +1197,6 @@ h3.header-text {
   background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
 }
 </style>
+
+
+

@@ -35,7 +35,7 @@
           >
             <div class="group-item-content">
               <span @click="filterByGroup(group)" class="group-name">{{ group }}</span>
-              <div class="group-actions" v-if="group !== '默认分组'">
+              <div class="group-actions" v-if="group !== t.accounts.defaultGroupName">
                 <el-icon @click.stop="showRenameGroupDialog(group)" class="group-action-icon">
                   <Edit />
                 </el-icon>
@@ -1156,7 +1156,7 @@ function handleBatchImport() {
 async function handleBatchImportConfirm(
   accountsToImport: Array<{ email: string; password: string; remark: string; refreshToken?: string }>,
   autoLogin: boolean,
-  group: string = '默认分组',
+  group: string = 'Default Group',
   tags: string[] = [],
   mode: 'password' | 'refresh_token' = 'password'
 ) {
@@ -1442,47 +1442,47 @@ async function handleExportAccounts(selectedOnly: boolean = false) {
     const radioHtml = `
       <div style="padding: 20px 0;">
         <div style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #ebeef5;">
-          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">导出内容</div>
+          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">${t.value.accounts.exportContent}</div>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportContent" value="password" checked style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">邮箱 + 密码</span>
-            <span style="color: #909399; margin-left: 8px;">传统登录凭证</span>
+            <span style="font-weight: 500;">${t.value.accounts.emailPassword}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.emailPasswordDesc}</span>
           </label>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportContent" value="refresh_token" style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">邮箱 + Refresh Token</span>
-            <span style="color: #909399; margin-left: 8px;">可直接刷新获取账号信息</span>
+            <span style="font-weight: 500;">${t.value.accounts.emailRefreshToken}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.emailRefreshTokenDesc}</span>
           </label>
         </div>
         <div style="margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #ebeef5;">
-          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">导出格式</div>
+          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">${t.value.accounts.exportFormat}</div>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportFormat" value="3" checked style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">文本格式</span>
-            <span style="color: #909399; margin-left: 8px;">简单列表</span>
+            <span style="font-weight: 500;">${t.value.accounts.textFormat}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.textFormatDesc}</span>
           </label>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportFormat" value="1" style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">CSV格式</span>
-            <span style="color: #909399; margin-left: 8px;">适合 Excel 打开</span>
+            <span style="font-weight: 500;">${t.value.accounts.csvFormat}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.csvFormatDesc}</span>
           </label>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportFormat" value="2" style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">JSON格式</span>
-            <span style="color: #909399; margin-left: 8px;">适合程序处理</span>
+            <span style="font-weight: 500;">${t.value.accounts.jsonFormat}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.jsonFormatDesc}</span>
           </label>
         </div>
         <div>
-          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">导出方式</div>
+          <div style="font-weight: 500; margin-bottom: 10px; color: #606266;">${t.value.accounts.exportMethod}</div>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportTarget" value="clipboard" checked style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">复制到剪贴板</span>
-            <span style="color: #909399; margin-left: 8px;">直接粘贴使用</span>
+            <span style="font-weight: 500;">${t.value.accounts.copyToClipboard}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.copyToClipboardDesc}</span>
           </label>
           <label style="display: block; margin: 10px 0; cursor: pointer; font-size: 14px;">
             <input type="radio" name="exportTarget" value="file" style="margin-right: 10px; cursor: pointer; transform: scale(1.2);" />
-            <span style="font-weight: 500;">下载文件</span>
-            <span style="color: #909399; margin-left: 8px;">保存到本地</span>
+            <span style="font-weight: 500;">${t.value.accounts.downloadFile}</span>
+            <span style="color: #909399; margin-left: 8px;">${t.value.accounts.downloadFileDesc}</span>
           </label>
         </div>
       </div>
@@ -1534,7 +1534,7 @@ async function handleExportAccounts(selectedOnly: boolean = false) {
     switch(format) {
       case '1': // CSV
         // 剪贴板不需要 BOM
-        content = target === 'clipboard' ? `邮箱,${credentialLabel},备注,分组,状态,套餐\n` : `\uFEFF邮箱,${credentialLabel},备注,分组,状态,套餐\n`;
+        content = target === 'clipboard' ? `${t.value.accounts.csvHeader.replace('{credential}', credentialLabel)}\n` : `\uFEFF${t.value.accounts.csvHeader.replace('{credential}', credentialLabel)}\n`;
         accounts.forEach(account => {
           content += `"${account.email}","${getCredential(account)}","${account.nickname || ''}","${account.group || ''}","${account.status || ''}","${account.plan_name || ''}"\n`;
         });
@@ -1588,7 +1588,7 @@ async function handleExportAccounts(selectedOnly: boolean = false) {
 
 async function showAddGroupDialog() {
   try {
-    const { value } = await ElMessageBox.prompt('请输入分组名称', '添加分组', {
+    const { value } = await ElMessageBox.prompt(t.value.accounts.addGroupPrompt, t.value.accounts.addGroupTitle, {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       inputPattern: /^.{1,20}$/,
@@ -1596,21 +1596,21 @@ async function showAddGroupDialog() {
     });
     
     await settingsStore.addGroup(value);
-    ElMessage.success('分组添加成功');
+    ElMessage.success(t.value.accounts.groupAddSuccess);
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`添加分组失败: ${error}`);
+      ElMessage.error(`${t.value.accounts.groupAddFailed}: ${error}`);
     }
   }
 }
 
 async function showRenameGroupDialog(oldName: string) {
   try {
-    const { value } = await ElMessageBox.prompt('请输入新的分组名称', `重命名分组 "${oldName}"`, {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    const { value } = await ElMessageBox.prompt(t.value.accounts.renameGroupPrompt, `${t.value.accounts.renameGroupTitle} "${oldName}"`, {
+      confirmButtonText: t.value.common.confirm,
+      cancelButtonText: t.value.common.cancel,
       inputPattern: /^.{1,20}$/,
-      inputErrorMessage: '分组名称长度应为1-20个字符',
+      inputErrorMessage: t.value.accounts.groupNameLength,
       inputValue: oldName
     });
     
@@ -1619,13 +1619,13 @@ async function showRenameGroupDialog(oldName: string) {
     }
     
     await settingsStore.renameGroup(oldName, value);
-    ElMessage.success('分组重命名成功');
+    ElMessage.success(t.value.accounts.groupRenameSuccess);
     
     // 刷新账号列表
     await accountsStore.loadAccounts();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`重命名分组失败: ${error}`);
+      ElMessage.error(`${t.value.accounts.groupRenameFailed}: ${error}`);
     }
   }
 }
@@ -1633,23 +1633,23 @@ async function showRenameGroupDialog(oldName: string) {
 async function showDeleteGroupConfirm(name: string) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除分组 "${name}" 吗？该分组下的账号将被移至"未分组"`,
-      '删除分组',
+      t.value.accounts.deleteGroupConfirm.replace('{name}', name),
+      t.value.accounts.deleteGroupTitle,
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.common.confirm,
+        cancelButtonText: t.value.common.cancel,
         type: 'warning'
       }
     );
     
     await settingsStore.deleteGroup(name);
-    ElMessage.success('分组删除成功');
+    ElMessage.success(t.value.accounts.groupDeleteSuccess);
     
     // 刷新账号列表
     await accountsStore.loadAccounts();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`删除分组失败: ${error}`);
+      ElMessage.error(`${t.value.accounts.groupDeleteFailed}: ${error}`);
     }
   }
 }
@@ -1684,7 +1684,7 @@ async function handleBatchUpdateGroup() {
   }
   
   if (!batchGroupTarget.value) {
-    ElMessage.warning('请选择目标分组');
+    ElMessage.warning(t.value.accounts.selectTargetGroup);
     return;
   }
   
@@ -1711,9 +1711,9 @@ async function handleBatchUpdateGroup() {
     
     // 显示结果
     if (failedCount === 0) {
-      ElMessage.success(`成功将 ${successCount} 个账号移动到"${batchGroupTarget.value}"分组`);
+      ElMessage.success(t.value.accounts.batchGroupSuccess.replace('{count}', String(successCount)).replace('{group}', batchGroupTarget.value));
     } else {
-      ElMessage.warning(`完成：成功 ${successCount} 个，失败 ${failedCount} 个`);
+      ElMessage.warning(t.value.accounts.batchGroupPartial.replace('{success}', String(successCount)).replace('{failed}', String(failedCount)));
     }
     
     // 关闭对话框并刷新
@@ -1721,7 +1721,7 @@ async function handleBatchUpdateGroup() {
     accountsStore.clearSelection();
     await accountsStore.loadAccounts();
   } catch (error) {
-    ElMessage.error(`批量更改分组失败: ${error}`);
+    ElMessage.error(`${t.value.accounts.batchGroupFailed}: ${error}`);
   } finally {
     isBatchUpdatingGroup.value = false;
   }
