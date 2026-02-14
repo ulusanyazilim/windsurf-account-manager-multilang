@@ -274,7 +274,7 @@
               </div>
             </template>
             
-            <el-table :data="records" v-loading="recordsLoading" empty-text="{{ t.accounts.autoReset.noRecords }}">
+            <el-table :data="records" v-loading="recordsLoading" :empty-text="t.accounts.autoReset.noRecords">
               <el-table-column :label="t.accounts.autoReset.byAccount" min-width="200">
                 <template #default="{ row }">
                   <div>
@@ -335,8 +335,8 @@
         </div>
       </el-tab-pane>
       
-      <!-- Tab 3: {{ t.accounts.autoReset.statsOverview }} -->
-      <el-tab-pane label="{{ t.accounts.autoReset.statsOverview }}" name="stats">
+      <!-- Tab 3: Stats Overview -->
+      <el-tab-pane :label="t.accounts.autoReset.statsOverview" name="stats">
         <div class="tab-content">
           <el-card shadow="never">
             <template #header>
@@ -345,7 +345,7 @@
               </div>
             </template>
             
-            <el-table :data="stats" v-loading="statsLoading" empty-text="{{ t.accounts.autoReset.noStats }}">
+            <el-table :data="stats" v-loading="statsLoading" :empty-text="t.accounts.autoReset.noStats">
               <el-table-column :label="t.accounts.autoReset.byAccount" min-width="200">
                 <template #default="{ row }">
                   <div>
@@ -552,7 +552,7 @@ const recordsPage = ref(1);
 const recordsPageSize = ref(20);
 const recordsTotal = ref(0);
 
-// {{ t.accounts.autoReset.statsOverview }}??
+// Stats overview
 const statsLoading = ref(false);
 const stats = ref<AccountResetStats[]>([]);
 const statsPage = ref(1);

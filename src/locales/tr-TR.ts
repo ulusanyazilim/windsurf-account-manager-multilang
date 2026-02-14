@@ -991,6 +991,8 @@ export default {
     messages: {
         account_refresh: 'Hesap listesi yenilendi',
         account_refresh_loading: 'Hesap listesi yenileniyor...',
+        noAccountsSelected: 'Seçili hesap yok',
+        noAccountsOnPage: 'Geçerli sayfada hesap yok',
         failed_refresh: 'Yenileme başarısız',
         message: 'Kaynak hesap sayısı hedef e-posta sayısıyla eşleşmiyor',
         account: 'Mevcut sayfada hesap yok',

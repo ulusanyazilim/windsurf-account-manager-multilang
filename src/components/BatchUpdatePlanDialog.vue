@@ -219,6 +219,7 @@ import {
   Medal, Check, Document, Delete, Clock, Calendar
 } from '@element-plus/icons-vue';
 import { apiService } from '@/api';
+import { useI18n } from '@/composables/useI18n';
 import type { Account } from '@/types';
 
 const props = defineProps<{
@@ -231,6 +232,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean];
   'success': [];
 }>();
+
+const { t } = useI18n();
 
 const visible = ref(props.modelValue);
 
@@ -423,7 +426,7 @@ async function startExecution() {
 
   const selectedAccounts = getSelectedAccounts();
   if (selectedAccounts.length === 0) {
-    ElMessage.warning('没有选中的账号');
+    ElMessage.warning(t.value.messages.noAccountsSelected);
     return;
   }
 

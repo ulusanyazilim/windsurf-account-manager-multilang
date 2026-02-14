@@ -954,7 +954,7 @@ async function refreshAccounts() {
       }
     } else {
       loading.close();
-      ElMessage.success('账号列表已刷新');
+      ElMessage.success(t.value.messages.account_refresh);
     }
   } catch (error) {
     loading.close();
@@ -1128,7 +1128,7 @@ function toggleSelectAll() {
 function selectCurrentPageAccounts() {
   const pageAccounts = accountsStore.paginatedAccounts;
   if (pageAccounts.length === 0) {
-    ElMessage.info('当前页没有账号');
+    ElMessage.info(t.value.messages.noAccountsOnPage);
     return;
   }
   
@@ -1429,7 +1429,7 @@ async function handleExportAccounts(selectedOnly: boolean = false) {
       // 导出选中的账号
       accounts = accountsStore.filteredAccounts.filter(a => accountsStore.selectedAccounts.has(a.id));
       if (accounts.length === 0) {
-        ElMessage.warning('没有选中的账号');
+        ElMessage.warning(t.value.messages.noAccountsSelected);
         return;
       }
     } else {
