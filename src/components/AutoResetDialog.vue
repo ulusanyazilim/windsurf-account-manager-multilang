@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <el-dialog
     v-model="visible"
     width="960px"
@@ -7,7 +7,7 @@
     class="auto-reset-dialog"
     @close="handleClose"
   >
-    <!-- 自定义对话框头部 -->
+    <!-- ???????? -->
     <template #header>
       <div class="dialog-header">
         <div class="header-title">
@@ -21,33 +21,33 @@
     </template>
     
     <el-tabs v-model="activeTab" @tab-change="handleTabChange" class="custom-tabs">
-      <!-- Tab 1: 规则配置 -->
-      <el-tab-pane :label="t.autoReset.ruleConfig" name="rules">
+      <!-- Tab 1: ???? -->
+      <el-tab-pane :label="t.accounts.autoReset.ruleConfig" name="rules">
         <div class="tab-content">
-          <!-- 添加配置区域 -->
+          <!-- ?????? -->
           <el-card class="add-config-card" shadow="never">
             <template #header>
               <div class="card-header">
-                <span>{{ t.autoReset.addRule }}</span>
+                <span>{{ t.accounts.autoReset.addRule }}</span>
               </div>
             </template>
             
             <el-form :model="newConfig" label-width="100px" size="default">
               <el-row :gutter="16">
                 <el-col :span="12">
-                  <el-form-item :label="t.autoReset.targetType">
+                  <el-form-item :label="t.accounts.autoReset.targetType">
                     <el-radio-group v-model="newConfig.targetType" @change="handleTargetTypeChange">
-                      <el-radio value="group">{{ t.autoReset.byGroup }}</el-radio>
-                      <el-radio value="account">{{ t.autoReset.byAccount }}</el-radio>
+                      <el-radio value="group">{{ t.accounts.autoReset.byGroup }}</el-radio>
+                      <el-radio value="account">{{ t.accounts.autoReset.byAccount }}</el-radio>
                     </el-radio-group>
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item :label="t.autoReset.selectTarget">
+                  <el-form-item :label="t.accounts.autoReset.selectTarget">
                     <el-select 
                       v-if="newConfig.targetType === 'group'"
                       v-model="newConfig.targetId" 
-                      :placeholder="t.autoReset.selectTarget"
+                      :placeholder="t.accounts.autoReset.selectTarget"
                       style="width: 100%;"
                     >
                       <el-option
@@ -59,8 +59,8 @@
                         <div class="group-option">
                           <span>{{ group }}</span>
                           <span class="group-stats">
-                            <el-tag type="primary" size="small">{{ t.autoReset.master }}{{ getGroupStats(group).masters }}</el-tag>
-                            <el-tag type="info" size="small">{{ t.autoReset.member }}{{ getGroupStats(group).members }}</el-tag>
+                            <el-tag type="primary" size="small">{{ t.accounts.autoReset.masterAccount }}{{ getGroupStats(group).masters }}</el-tag>
+                            <el-tag type="info" size="small">{{ t.accounts.autoReset.masterAccount }}{{ getGroupStats(group).members }}</el-tag>
                           </span>
                         </div>
                       </el-option>
@@ -68,7 +68,7 @@
                     <el-select 
                       v-else
                       v-model="newConfig.targetId" 
-                      :placeholder="t.autoReset.selectTarget"
+                      :placeholder="t.accounts.autoReset.selectTarget"
                       filterable
                       style="width: 100%;"
                     >
@@ -85,14 +85,14 @@
               
               <el-row :gutter="16">
                 <el-col :span="8">
-                  <el-form-item :label="t.autoReset.checkInterval">
+                  <el-form-item :label="t.accounts.autoReset.checkInterval">
                     <el-input-number
                       v-model="newConfig.checkInterval"
                       :min="1"
                       :max="1440"
                       style="width: 100%;"
                     />
-                    <span class="unit-label">{{ t.autoReset.minutes }}</span>
+                    <span class="unit-label">{{ t.accounts.autoReset.minutes }}</span>
                     <div class="interval-presets">
                       <el-button size="small" text @click="newConfig.checkInterval = 5">5</el-button>
                       <el-button size="small" text @click="newConfig.checkInterval = 10">10</el-button>
@@ -102,7 +102,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item :label="t.autoReset.usageThreshold">
+                  <el-form-item :label="t.accounts.autoReset.usageThreshold">
                     <el-input-number
                       v-model="newConfig.usageThreshold"
                       :min="1"
@@ -113,7 +113,7 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="8">
-                  <el-form-item :label="t.autoReset.remainingThreshold">
+                  <el-form-item :label="t.accounts.autoReset.remainingThreshold">
                     <el-input-number
                       v-model="newConfig.remainingThreshold"
                       :min="0"
@@ -121,7 +121,7 @@
                       :step="100"
                       style="width: 100%;"
                     />
-                    <span class="unit-label">{{ t.autoReset.credits }}</span>
+                    <span class="unit-label">{{ t.accounts.autoReset.credits }}</span>
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -129,21 +129,21 @@
               <el-form-item>
                 <el-button type="primary" @click="handleAddConfig" :loading="adding">
                   <el-icon><Plus /></el-icon>
-                  {{ t.autoReset.addRuleBtn }}
+                  {{ t.accounts.autoReset.addRuleBtn }}
                 </el-button>
                 <span class="tip-text">
-                  {{ t.autoReset.triggerCondition.replace('{usage}', String(newConfig.usageThreshold)).replace('{remaining}', String(newConfig.remainingThreshold)) }}
+                  {{ t.accounts.autoReset.triggerCondition.replace('{usage}', String(newConfig.usageThreshold)).replace('{remaining}', String(newConfig.remainingThreshold)) }}
                 </span>
               </el-form-item>
             </el-form>
           </el-card>
           
-          <!-- 已配置的规则列表 -->
+          <!-- ???????? -->
           <el-card class="config-list-card" shadow="never">
             <template #header>
               <div class="card-header">
                 <div class="header-left">
-                  <span>{{ t.autoReset.configuredRules }} ({{ filteredConfigs.length }}/{{ configs.length }})</span>
+                  <span>{{ t.accounts.autoReset.configuredRules }} ({{ filteredConfigs.length }}/{{ configs.length }})</span>
                   <el-pagination
                     v-if="filteredConfigs.length > 0"
                     v-model:current-page="configCurrentPage"
@@ -158,7 +158,7 @@
                 <div class="header-actions">
                   <el-input
                     v-model="searchKeyword"
-                    :placeholder="t.autoReset.searchPlaceholder"
+                    :placeholder="t.accounts.autoReset.searchPlaceholder"
                     :prefix-icon="Search"
                     clearable
                     size="small"
@@ -172,7 +172,7 @@
                     :loading="checkingAll"
                   >
                     <el-icon><Refresh /></el-icon>
-                    {{ t.autoReset.checkAll }}
+                    {{ t.accounts.autoReset.check }}
                   </el-button>
                   <el-button 
                     v-if="filteredConfigs.length > 0" 
@@ -182,61 +182,61 @@
                     :loading="resettingAll"
                   >
                     <el-icon><RefreshRight /></el-icon>
-                    {{ t.autoReset.resetAll }}
+                    {{ t.accounts.autoReset.resetAll }}
                   </el-button>
                 </div>
               </div>
             </template>
             
-            <el-table :data="paginatedConfigs" v-loading="loading" :empty-text="t.autoReset.noRules">
-              <el-table-column :label="t.autoReset.target" min-width="280">
+            <el-table :data="paginatedConfigs" v-loading="loading" :empty-text="t.accounts.autoReset.noRules">
+              <el-table-column :label="t.accounts.autoReset.selectTarget" min-width="280">
                 <template #default="{ row }">
                   <div class="target-info">
                     <el-tag :type="row.targetType === 'group' ? 'primary' : 'success'" size="small">
-                      {{ row.targetType === 'group' ? t.autoReset.group : t.autoReset.account }}
+                      {{ row.targetType === 'group' ? t.accounts.autoReset.byGroup : t.accounts.autoReset.byAccount }}
                     </el-tag>
                     <span class="target-name">
                       {{ getTargetEmail(row) }}
                       <span v-if="getTargetNickname(row)" class="nickname">({{ getTargetNickname(row) }})</span>
                     </span>
                     <span v-if="row.targetType === 'group'" class="group-info">
-                      <el-tag type="warning" size="small" effect="plain">{{ t.autoReset.master }}{{ getGroupStats(row.targetId).masters }}</el-tag>
-                      <el-tag type="info" size="small" effect="plain">{{ t.autoReset.member }}{{ getGroupStats(row.targetId).members }}</el-tag>
+                      <el-tag type="warning" size="small" effect="plain">{{ t.accounts.autoReset.masterAccount }}{{ getGroupStats(row.targetId).masters }}</el-tag>
+                      <el-tag type="info" size="small" effect="plain">{{ t.accounts.autoReset.masterAccount }}{{ getGroupStats(row.targetId).members }}</el-tag>
                     </span>
                   </div>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.checkInterval" width="90" align="center">
+              <el-table-column :label="t.accounts.autoReset.checkInterval" width="90" align="center">
                 <template #default="{ row }">
-                  {{ row.checkInterval }}{{ t.autoReset.minutes }}
+                  {{ row.checkInterval }}{{ t.accounts.autoReset.minutes }}
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.triggerCondition" width="140">
+              <el-table-column :label="t.accounts.autoReset.triggerCondition" width="140">
                 <template #default="{ row }">
                   <div class="condition-info">
-                    <span>{{ t.autoReset.usageThreshold }} ≥ {{ row.usageThreshold }}%</span>
-                    <span>{{ t.autoReset.remainingThreshold }} ≤ {{ row.remainingThreshold }}</span>
+                    <span>{{ t.accounts.autoReset.usageThreshold }} ? {{ row.usageThreshold }}%</span>
+                    <span>{{ t.accounts.autoReset.remainingThreshold }} ? {{ row.remainingThreshold }}</span>
                   </div>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.lastCheck" width="120">
+              <el-table-column :label="t.accounts.autoReset.lastCheck" width="120">
                 <template #default="{ row }">
                   <span v-if="row.lastCheckAt">{{ formatTime(row.lastCheckAt) }}</span>
                   <span v-else class="no-data">-</span>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.lastReset" width="120">
+              <el-table-column :label="t.accounts.autoReset.lastReset" width="120">
                 <template #default="{ row }">
                   <span v-if="row.lastResetAt">{{ formatTime(row.lastResetAt) }}</span>
                   <span v-else class="no-data">-</span>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.status" width="70" align="center">
+              <el-table-column :label="t.accounts.autoReset.status" width="70" align="center">
                 <template #default="{ row }">
                   <el-switch
                     v-model="row.enabled"
@@ -246,12 +246,12 @@
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.actions" width="150" align="center">
+              <el-table-column :label="t.accounts.autoReset.actions" width="150" align="center">
                 <template #default="{ row }">
-                  <el-button type="primary" link size="small" @click="handleEditConfig(row)">{{ t.autoReset.edit }}</el-button>
-                  <el-button type="success" link size="small" @click="handleCheckNow(row)" :loading="row._checking">{{ t.autoReset.check }}</el-button>
-                  <el-button type="warning" link size="small" @click="handleResetNow(row)" :loading="row._resetting">{{ t.autoReset.reset }}</el-button>
-                  <el-button type="danger" link size="small" @click="handleDeleteConfig(row)">{{ t.autoReset.delete }}</el-button>
+                  <el-button type="primary" link size="small" @click="handleEditConfig(row)">{{ t.accounts.autoReset.edit }}</el-button>
+                  <el-button type="success" link size="small" @click="handleCheckNow(row)" :loading="row._checking">{{ t.accounts.autoReset.check }}</el-button>
+                  <el-button type="warning" link size="small" @click="handleResetNow(row)" :loading="row._resetting">{{ t.accounts.autoReset.reset }}</el-button>
+                  <el-button type="danger" link size="small" @click="handleDeleteConfig(row)">{{ t.accounts.autoReset.delete }}</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -260,22 +260,22 @@
         </div>
       </el-tab-pane>
       
-      <!-- Tab 2: 重置记录 -->
-      <el-tab-pane :label="t.autoReset.resetRecords" name="records">
+      <!-- Tab 2: ???? -->
+      <el-tab-pane :label="t.accounts.autoReset.resetRecords" name="records">
         <div class="tab-content">
           <el-card shadow="never">
             <template #header>
               <div class="card-header">
-                <span>{{ t.autoReset.resetRecords }} ({{ recordsTotal }})</span>
+                <span>{{ t.accounts.autoReset.resetRecords }} ({{ recordsTotal }})</span>
                 <el-button v-if="recordsTotal > 0" type="danger" link @click="handleClearRecords">
                   <el-icon><Delete /></el-icon>
-                  {{ t.autoReset.clearRecords }}
+                  {{ t.accounts.autoReset.clearRecords }}
                 </el-button>
               </div>
             </template>
             
-            <el-table :data="records" v-loading="recordsLoading" empty-text="{{ t.autoReset.noRecords }}">
-              <el-table-column :label="t.autoReset.account" min-width="200">
+            <el-table :data="records" v-loading="recordsLoading" empty-text="{{ t.accounts.autoReset.noRecords }}">
+              <el-table-column :label="t.accounts.autoReset.byAccount" min-width="200">
                 <template #default="{ row }">
                   <div>
                     <span>{{ row.account_email }}</span>
@@ -284,26 +284,26 @@
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.masterAccount" min-width="180">
+              <el-table-column :label="t.accounts.autoReset.masterAccount" min-width="180">
                 <template #default="{ row }">
                   {{ row.master_email }}
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.usedBefore" width="120" align="center">
+              <el-table-column :label="t.accounts.autoReset.usedBefore" width="120" align="center">
                 <template #default="{ row }">
                   <span>{{ formatNumber(row.used_quota_before / 100) }}</span>
                   <span class="usage-percent">({{ row.usage_percent }}%)</span>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.totalQuota" width="100" align="center">
+              <el-table-column :label="t.accounts.autoReset.totalQuota" width="100" align="center">
                 <template #default="{ row }">
                   {{ formatNumber(row.total_quota / 100) }}
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.autoJoined" width="80" align="center">
+              <el-table-column :label="t.accounts.autoReset.autoJoined" width="80" align="center">
                 <template #default="{ row }">
                   <el-tag :type="row.auto_joined ? 'success' : 'info'" size="small">
                     {{ row.auto_joined ? t.common.yes : t.common.no }}
@@ -311,14 +311,14 @@
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.resetTime" width="160">
+              <el-table-column :label="t.accounts.autoReset.resetTime" width="160">
                 <template #default="{ row }">
                   {{ formatFullTime(row.reset_at) }}
                 </template>
               </el-table-column>
             </el-table>
             
-            <!-- 记录分页 -->
+            <!-- ???? -->
             <div class="pagination-wrapper">
               <el-pagination
                 v-model:current-page="recordsPage"
@@ -335,18 +335,18 @@
         </div>
       </el-tab-pane>
       
-      <!-- Tab 3: {{ t.autoReset.statsOverview }} -->
-      <el-tab-pane label="{{ t.autoReset.statsOverview }}" name="stats">
+      <!-- Tab 3: {{ t.accounts.autoReset.statsOverview }} -->
+      <el-tab-pane label="{{ t.accounts.autoReset.statsOverview }}" name="stats">
         <div class="tab-content">
           <el-card shadow="never">
             <template #header>
               <div class="card-header">
-                <span>{{ t.autoReset.accountResetStats }} ({{ statsTotal }})</span>
+                <span>{{ t.accounts.autoReset.accountResetStats }} ({{ statsTotal }})</span>
               </div>
             </template>
             
-            <el-table :data="stats" v-loading="statsLoading" empty-text="{{ t.autoReset.noStats }}">
-              <el-table-column :label="t.autoReset.account" min-width="200">
+            <el-table :data="stats" v-loading="statsLoading" empty-text="{{ t.accounts.autoReset.noStats }}">
+              <el-table-column :label="t.accounts.autoReset.byAccount" min-width="200">
                 <template #default="{ row }">
                   <div>
                     <span>{{ row.account_email }}</span>
@@ -355,25 +355,25 @@
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.resetCount" width="100" align="center">
+              <el-table-column :label="t.accounts.autoReset.resetCount" width="100" align="center">
                 <template #default="{ row }">
                   <el-tag type="primary">{{ row.reset_count }}</el-tag>
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.totalUsedQuota" width="140" align="center">
+              <el-table-column :label="t.accounts.autoReset.totalUsedQuota" width="140" align="center">
                 <template #default="{ row }">
                   {{ formatNumber(row.total_used_quota / 100) }}
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.avgUsagePerReset" width="140" align="center">
+              <el-table-column :label="t.accounts.autoReset.avgUsagePerReset" width="140" align="center">
                 <template #default="{ row }">
                   {{ row.reset_count > 0 ? formatNumber(Math.round(row.total_used_quota / row.reset_count / 100)) : '-' }}
                 </template>
               </el-table-column>
               
-              <el-table-column :label="t.autoReset.lastReset" width="160">
+              <el-table-column :label="t.accounts.autoReset.lastReset" width="160">
                 <template #default="{ row }">
                   <span v-if="row.last_reset_at">{{ formatFullTime(row.last_reset_at) }}</span>
                   <span v-else class="no-data">-</span>
@@ -381,7 +381,7 @@
               </el-table-column>
             </el-table>
             
-            <!-- 统计分页 -->
+            <!-- ???? -->
             <div class="pagination-wrapper">
               <el-pagination
                 v-model:current-page="statsPage"
@@ -399,36 +399,36 @@
       </el-tab-pane>
     </el-tabs>
     
-    <!-- 编辑对话框 -->
+    <!-- ????? -->
     <el-dialog
       v-model="showEditDialog"
-      :title="t.autoReset.editRule"
+      :title="t.accounts.autoReset.editRule"
       width="450px"
       :close-on-click-modal="false"
       append-to-body
     >
       <el-form :model="editForm" label-width="100px" v-if="editingConfig">
-        <el-form-item :label="t.autoReset.target">
+        <el-form-item :label="t.accounts.autoReset.selectTarget">
           <span>{{ getTargetName(editingConfig) }}</span>
         </el-form-item>
         
-        <el-form-item :label="t.autoReset.checkInterval">
+        <el-form-item :label="t.accounts.autoReset.checkInterval">
           <el-input-number
             v-model="editForm.checkInterval"
             :min="1"
             :max="1440"
             style="width: 100%;"
           />
-          <span class="unit-label">{{ t.autoReset.minutes }}</span>
+          <span class="unit-label">{{ t.accounts.autoReset.minutes }}</span>
           <div class="interval-presets">
-            <el-button size="small" text @click="editForm.checkInterval = 5">5 {{ t.autoReset.minutes }}</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 10">10 {{ t.autoReset.minutes }}</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 30">30 {{ t.autoReset.minutes }}</el-button>
-            <el-button size="small" text @click="editForm.checkInterval = 60">60 {{ t.autoReset.minutes }}</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 5">5 {{ t.accounts.autoReset.minutes }}</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 10">10 {{ t.accounts.autoReset.minutes }}</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 30">30 {{ t.accounts.autoReset.minutes }}</el-button>
+            <el-button size="small" text @click="editForm.checkInterval = 60">60 {{ t.accounts.autoReset.minutes }}</el-button>
           </div>
         </el-form-item>
         
-        <el-form-item :label="t.autoReset.usageThreshold">
+        <el-form-item :label="t.accounts.autoReset.usageThreshold">
           <el-input-number
             v-model="editForm.usageThreshold"
             :min="1"
@@ -438,7 +438,7 @@
           <span class="unit-label">%</span>
         </el-form-item>
         
-        <el-form-item :label="t.autoReset.remainingThreshold">
+        <el-form-item :label="t.accounts.autoReset.remainingThreshold">
           <el-input-number
             v-model="editForm.remainingThreshold"
             :min="0"
@@ -446,12 +446,12 @@
             :step="100"
             style="width: 100%;"
           />
-          <span class="unit-label">{{ t.autoReset.credits }}</span>
+          <span class="unit-label">{{ t.accounts.autoReset.credits }}</span>
         </el-form-item>
         
         <el-form-item>
           <span class="tip-text">
-            {{ t.autoReset.whenUsageGte }} {{ editForm.usageThreshold }}% {{ t.autoReset.andRemainingLte }} {{ editForm.remainingThreshold }} {{ t.autoReset.triggerReset }}
+            {{ t.accounts.autoReset.whenUsageGte }} {{ editForm.usageThreshold }}% {{ t.accounts.autoReset.andRemainingLte }} {{ editForm.remainingThreshold }} {{ t.accounts.autoReset.triggerReset }}
           </span>
         </el-form-item>
       </el-form>
@@ -529,13 +529,13 @@ const visible = computed({
   set: (val) => emit('update:modelValue', val)
 });
 
-// Tab 状态
+// Tab ??
 const activeTab = ref('rules');
 
-// 分页选项
+// ????
 const pageSizeOptions = [10, 20, 50, 100, 200];
 
-// 规则配置状态
+// ??????
 const loading = ref(false);
 const adding = ref(false);
 const checkingAll = ref(false);
@@ -545,21 +545,21 @@ const configs = ref<AutoResetConfig[]>([]);
 const configCurrentPage = ref(1);
 const configPageSize = ref(20);
 
-// 重置记录状态
+// ??????
 const recordsLoading = ref(false);
 const records = ref<ResetRecord[]>([]);
 const recordsPage = ref(1);
 const recordsPageSize = ref(20);
 const recordsTotal = ref(0);
 
-// {{ t.autoReset.statsOverview }}状态
+// {{ t.accounts.autoReset.statsOverview }}??
 const statsLoading = ref(false);
 const stats = ref<AccountResetStats[]>([]);
 const statsPage = ref(1);
 const statsPageSize = ref(20);
 const statsTotal = ref(0);
 
-// 定时器ID映射
+// ???ID??
 const timerMap = ref<Map<string, ReturnType<typeof setInterval>>>(new Map());
 
 const newConfig = ref({
@@ -570,7 +570,7 @@ const newConfig = ref({
   remainingThreshold: 1000,
 });
 
-// 编辑相关状态
+// ??????
 const showEditDialog = ref(false);
 const editingConfig = ref<AutoResetConfig | null>(null);
 const editForm = ref({
@@ -579,7 +579,7 @@ const editForm = ref({
   remainingThreshold: 1000,
 });
 
-// 过滤后的配置列表
+// ????????
 const filteredConfigs = computed(() => {
   if (!searchKeyword.value.trim()) return configs.value;
   const keyword = searchKeyword.value.toLowerCase().trim();
@@ -589,14 +589,14 @@ const filteredConfigs = computed(() => {
   });
 });
 
-// 分页后的配置列表
+// ????????
 const paginatedConfigs = computed(() => {
   const start = (configCurrentPage.value - 1) * configPageSize.value;
   const end = start + configPageSize.value;
   return filteredConfigs.value.slice(start, end);
 });
 
-// 加载配置
+// ????
 async function loadConfigs() {
   loading.value = true;
   try {
@@ -604,13 +604,13 @@ async function loadConfigs() {
     configs.value = result.map(c => ({ ...c, _updating: false, _checking: false, _resetting: false }));
     setupTimers();
   } catch (error) {
-    console.error('加载自动重置配置失败:', error);
+    console.error('??????????:', error);
   } finally {
     loading.value = false;
   }
 }
 
-// 加载重置记录
+// ??????
 async function loadRecords() {
   recordsLoading.value = true;
   try {
@@ -621,13 +621,13 @@ async function loadRecords() {
     records.value = result.records;
     recordsTotal.value = result.total;
   } catch (error) {
-    console.error('加载重置记录失败:', error);
+    console.error('????????:', error);
   } finally {
     recordsLoading.value = false;
   }
 }
 
-// 加载统计数据
+// ??????
 async function loadStats() {
   statsLoading.value = true;
   try {
@@ -638,13 +638,13 @@ async function loadStats() {
     stats.value = result.stats;
     statsTotal.value = result.total;
   } catch (error) {
-    console.error('加载统计数据失败:', error);
+    console.error('????????:', error);
   } finally {
     statsLoading.value = false;
   }
 }
 
-// Tab 切换处理
+// Tab ????
 function handleTabChange(tab: string) {
   if (tab === 'records') {
     loadRecords();
@@ -653,7 +653,7 @@ function handleTabChange(tab: string) {
   }
 }
 
-// 设置定时器
+// ?????
 function setupTimers() {
   timerMap.value.forEach(timer => clearInterval(timer));
   timerMap.value.clear();
@@ -666,21 +666,21 @@ function setupTimers() {
   });
 }
 
-// 执行检查
+// ????
 async function executeCheck(configId: string) {
   try {
     const result = await invoke<any>('check_and_auto_reset', { configId });
     if (result.reset_count > 0) {
-      ElMessage.success(`自动重置: 重置了 ${result.reset_count} 个账号的{{ t.autoReset.credits }}`);
+      ElMessage.success(`????: ??? ${result.reset_count} ????{{ t.accounts.autoReset.credits }}`);
       await accountsStore.loadAccounts();
     }
     await loadConfigs();
   } catch (error) {
-    console.error('自动重置检查失败:', error);
+    console.error('????????:', error);
   }
 }
 
-// 获取目标邮箱/分组名
+// ??????/???
 function getTargetEmail(config: AutoResetConfig): string {
   if (config.targetType === 'group') {
     return config.targetId;
@@ -690,7 +690,7 @@ function getTargetEmail(config: AutoResetConfig): string {
   }
 }
 
-// 获取目标备注
+// ??????
 function getTargetNickname(config: AutoResetConfig): string | null {
   if (config.targetType === 'group') {
     return null;
@@ -701,36 +701,36 @@ function getTargetNickname(config: AutoResetConfig): string | null {
   }
 }
 
-// 获取目标名称（兼容）
+// ??????(??)
 function getTargetName(config: AutoResetConfig): string {
   const email = getTargetEmail(config);
   const nickname = getTargetNickname(config);
   return nickname ? `${email} (${nickname})` : email;
 }
 
-// 判断{{ row.auto_joined ? t.common.yes : t.common.no }}{{ row.auto_joined ? t.common.yes : t.common.no }}为主账号（有团队的账号）
+// ??{{ row.auto_joined ? t.common.yes : t.common.no }}{{ row.auto_joined ? t.common.yes : t.common.no }}????(??????)
 function isMasterAccount(account: any): boolean {
-  // 使用 is_team_owner 字段判断，该字段在登录/刷新时通过 API 获取
+  // ?? is_team_owner ????,??????/????? API ??
   return account.is_team_owner === true;
 }
 
-// 获取分组统计信息（主账号/团队成员数量）
+// ????????(???/??????)
 function getGroupStats(group: string): { masters: number; members: number } {
   const groupAccounts = accountsStore.accounts.filter(a => a.group === group);
-  // 主账号：有团队套餐的账号
+  // ???:????????
   const masters = groupAccounts.filter(a => isMasterAccount(a)).length;
-  // 团队成员：普通账号
+  // ????:????
   const members = groupAccounts.length - masters;
   return { masters, members };
 }
 
-// 获取分组标签（用于下拉选项显示）
+// ??????(????????)
 function getGroupLabel(group: string): string {
   const stats = getGroupStats(group);
-  return `${group} (主${stats.masters}/成员${stats.members})`;
+  return `${group} (?${stats.masters}/??${stats.members})`;
 }
 
-// 格式化时间（短格式）
+// ?????(???)
 function formatTime(timeStr: string): string {
   const date = new Date(timeStr);
   return date.toLocaleString('zh-CN', {
@@ -741,7 +741,7 @@ function formatTime(timeStr: string): string {
   });
 }
 
-// 格式化时间（完整格式）
+// ?????(????)
 function formatFullTime(timeStr: string): string {
   const date = new Date(timeStr);
   return date.toLocaleString('zh-CN', {
@@ -754,20 +754,20 @@ function formatFullTime(timeStr: string): string {
   });
 }
 
-// 格式化数字
+// ?????
 function formatNumber(num: number): string {
   return num.toLocaleString('zh-CN');
 }
 
-// 目标类型变化时清空选择
+// ???????????
 function handleTargetTypeChange() {
   newConfig.value.targetId = '';
 }
 
-// 添加配置
+// ????
 async function handleAddConfig() {
   if (!newConfig.value.targetId) {
-    ElMessage.warning('请选择目标');
+    ElMessage.warning('?????');
     return;
   }
   
@@ -781,17 +781,17 @@ async function handleAddConfig() {
       remainingThreshold: newConfig.value.remainingThreshold,
     });
     
-    ElMessage.success('添加成功');
+    ElMessage.success('????');
     newConfig.value.targetId = '';
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`添加失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     adding.value = false;
   }
 }
 
-// 切换启用状态
+// ??????
 async function handleToggleEnabled(config: AutoResetConfig, enabled: boolean) {
   config._updating = true;
   try {
@@ -808,37 +808,37 @@ async function handleToggleEnabled(config: AutoResetConfig, enabled: boolean) {
       }
     }
     
-    ElMessage.success(enabled ? '已启用' : '已禁用');
+    ElMessage.success(enabled ? '???' : '???');
   } catch (error) {
     config.enabled = !enabled;
-    ElMessage.error(`操作失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     config._updating = false;
   }
 }
 
-// 立即检查
+// ????
 async function handleCheckNow(config: AutoResetConfig) {
   config._checking = true;
   try {
     const result = await invoke<any>('check_and_auto_reset', { configId: config.id });
     
     if (result.reset_count > 0) {
-      ElMessage.success(`重置了 ${result.reset_count} 个账号的{{ t.autoReset.credits }}`);
+      ElMessage.success(`??? ${result.reset_count} ????{{ t.accounts.autoReset.credits }}`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('检查完成，无需重置');
+      ElMessage.info('????,????');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`检查失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     config._checking = false;
   }
 }
 
-// 检查全部
+// ????
 async function handleCheckAll() {
   checkingAll.value = true;
   let totalReset = 0;
@@ -850,42 +850,42 @@ async function handleCheckAll() {
     }
     
     if (totalReset > 0) {
-      ElMessage.success(`检查完成，共重置 ${totalReset} 个账号`);
+      ElMessage.success(`????,??? ${totalReset} ???`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('检查完成，无需重置');
+      ElMessage.info('????,????');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`检查失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     checkingAll.value = false;
   }
 }
 
-// 立即重置单个
+// ??????
 async function handleResetNow(config: AutoResetConfig) {
   config._resetting = true;
   try {
     const result = await invoke<any>('force_reset_config', { configId: config.id });
     
     if (result.reset_count > 0) {
-      ElMessage.success(`已重置 ${result.reset_count} 个账号的{{ t.autoReset.credits }}`);
+      ElMessage.success(`??? ${result.reset_count} ????{{ t.accounts.autoReset.credits }}`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('没有可重置的账号');
+      ElMessage.info('????????');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`重置失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     config._resetting = false;
   }
 }
 
-// 立即重置全部
+// ??????
 async function handleResetAll() {
   resettingAll.value = true;
   let totalReset = 0;
@@ -897,21 +897,21 @@ async function handleResetAll() {
     }
     
     if (totalReset > 0) {
-      ElMessage.success(`重置完成，共重置 ${totalReset} 个账号`);
+      ElMessage.success(`????,??? ${totalReset} ???`);
       await accountsStore.loadAccounts();
     } else {
-      ElMessage.info('没有可重置的账号');
+      ElMessage.info('????????');
     }
     
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`重置失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   } finally {
     resettingAll.value = false;
   }
 }
 
-// 编辑配置
+// ????
 function handleEditConfig(config: AutoResetConfig) {
   editingConfig.value = config;
   editForm.value = {
@@ -922,7 +922,7 @@ function handleEditConfig(config: AutoResetConfig) {
   showEditDialog.value = true;
 }
 
-// {{ t.common.save }}编辑
+// {{ t.common.save }}??
 async function handleSaveEdit() {
   if (!editingConfig.value) return;
   
@@ -934,21 +934,21 @@ async function handleSaveEdit() {
       remainingThreshold: editForm.value.remainingThreshold,
     });
     
-    ElMessage.success('修改成功');
+    ElMessage.success('????');
     showEditDialog.value = false;
     editingConfig.value = null;
     await loadConfigs();
   } catch (error) {
-    ElMessage.error(`修改失败: ${error}`);
+    ElMessage.error(`????: ${error}`);
   }
 }
 
-// 删除配置
+// ????
 async function handleDeleteConfig(config: AutoResetConfig) {
   try {
     await ElMessageBox.confirm(
-      `确定要删除 "${getTargetName(config)}" 的自动重置规则吗？`,
-      '确认删除',
+      `????? "${getTargetName(config)}" ?????????`,
+      '????',
       { type: 'warning' }
     );
     
@@ -960,31 +960,31 @@ async function handleDeleteConfig(config: AutoResetConfig) {
       timerMap.value.delete(config.id);
     }
     
-    ElMessage.success('删除成功');
+    ElMessage.success('????');
     await loadConfigs();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`删除失败: ${error}`);
+      ElMessage.error(`????: ${error}`);
     }
   }
 }
 
-// 清空重置记录
+// ??????
 async function handleClearRecords() {
   try {
     await ElMessageBox.confirm(
-      '确定要清空所有重置记录吗？此操作不可恢复。',
-      '确认清空',
+      '?????????????????????',
+      '????',
       { type: 'warning' }
     );
     
     await invoke('clear_reset_records');
-    ElMessage.success('清空成功');
+    ElMessage.success('????');
     await loadRecords();
     await loadStats();
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`清空失败: ${error}`);
+      ElMessage.error(`????: ${error}`);
     }
   }
 }
@@ -993,7 +993,7 @@ function handleClose() {
   visible.value = false;
 }
 
-// 监听对话框打开
+// ???????
 watch(visible, (val) => {
   if (val) {
     loadConfigs();
@@ -1001,13 +1001,13 @@ watch(visible, (val) => {
   }
 });
 
-// 组件卸载时清除定时器
+// ??????????
 onUnmounted(() => {
   timerMap.value.forEach(timer => clearInterval(timer));
   timerMap.value.clear();
 });
 
-// 暴露方法供外部调用
+// ?????????
 defineExpose({
   loadConfigs,
   setupTimers,
@@ -1015,7 +1015,7 @@ defineExpose({
 </script>
 
 <style scoped>
-/* 对话框头部样式 */
+/* ??????? */
 .dialog-header {
   display: flex;
   align-items: center;
@@ -1063,7 +1063,7 @@ defineExpose({
   transform: rotate(90deg);
 }
 
-/* 自定义标签页样式 */
+/* ???????? */
 .custom-tabs :deep(.el-tabs__header) {
   margin-bottom: 16px;
   border-bottom: 2px solid #E5E7EB;
@@ -1087,14 +1087,14 @@ defineExpose({
   border-radius: 3px;
 }
 
-/* 标签页内容区域 */
+/* ??????? */
 .tab-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* 卡片样式 */
+/* ???? */
 .add-config-card,
 .config-list-card {
   border: 1px solid #E5E7EB;
@@ -1144,7 +1144,7 @@ defineExpose({
   gap: 12px;
 }
 
-/* 表单样式 */
+/* ???? */
 .unit-label {
   margin-left: 8px;
   color: #6B7280;
@@ -1162,7 +1162,7 @@ defineExpose({
   border: 1px solid #BBF7D0;
 }
 
-/* 表格目标信息 */
+/* ?????? */
 .target-info {
   display: flex;
   align-items: center;
@@ -1190,7 +1190,7 @@ defineExpose({
   color: #9CA3AF;
 }
 
-/* 分页 */
+/* ?? */
 .pagination-wrapper {
   display: flex;
   justify-content: flex-end;
@@ -1199,7 +1199,7 @@ defineExpose({
   border-top: 1px solid #F3F4F6;
 }
 
-/* 昵称标签 */
+/* ???? */
 .nickname {
   color: #D97706;
   font-size: 12px;
@@ -1217,7 +1217,7 @@ defineExpose({
   margin-left: 4px;
 }
 
-/* 快速选择按钮 */
+/* ?????? */
 .interval-presets {
   display: flex;
   gap: 6px;
@@ -1239,7 +1239,7 @@ defineExpose({
   border-color: #10B981;
 }
 
-/* 分组选项样式 */
+/* ?????? */
 .group-option {
   display: flex;
   justify-content: space-between;
@@ -1270,7 +1270,7 @@ defineExpose({
   border-radius: 4px;
 }
 
-/* 表格样式优化 */
+/* ?????? */
 :deep(.el-table) {
   border-radius: 8px;
   overflow: hidden;
@@ -1286,7 +1286,7 @@ defineExpose({
   padding: 12px 0;
 }
 
-/* 暗色模式适配 */
+/* ?????? */
 :root.dark .dialog-header {
   background: linear-gradient(135deg, #065F46 0%, #064E3B 100%);
 }
@@ -1373,4 +1373,8 @@ defineExpose({
   border-bottom-color: #374151;
 }
 </style>
+
+
+
+
 

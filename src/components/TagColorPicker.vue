@@ -30,7 +30,7 @@
     </div>
     
     <div v-if="tags.length === 0" class="no-tags-hint">
-      暂无标签，请先添加标签
+      {{ t.tags.noTagsHint }}
     </div>
   </div>
 </template>
@@ -38,6 +38,7 @@
 <script setup lang="ts">
 import { reactive, watch } from 'vue';
 import { Close } from '@element-plus/icons-vue';
+import { useI18n } from '@/composables/useI18n';
 import type { TagWithColor } from '@/types';
 
 const props = defineProps<{
@@ -48,6 +49,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:tagColors': [colors: TagWithColor[]];
 }>();
+
+const { t } = useI18n();
 
 // 预定义颜色
 const predefineColors = [

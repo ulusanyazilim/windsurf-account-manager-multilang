@@ -9,10 +9,10 @@
     <div class="import-container">
       <!-- 导入模式切换 -->
       <div class="mode-section">
-        <span class="mode-label">导入模式：</span>
+        <span class="mode-label">{{ t.batchImport.importMode }}</span>
         <el-radio-group v-model="importMode" @change="handleModeChange">
-          <el-radio value="password">邮箱密码</el-radio>
-          <el-radio value="refresh_token">Refresh Token</el-radio>
+          <el-radio value="password">{{ t.batchImport.emailPassword }}</el-radio>
+          <el-radio value="refresh_token">{{ t.batchImport.refreshToken }}</el-radio>
         </el-radio-group>
       </div>
 
@@ -24,18 +24,18 @@
         style="margin-bottom: 16px;"
       >
         <template #title>
-          <span v-if="importMode === 'password'">每行一个账号，格式：<code>邮箱 密码 备注(可选)</code></span>
-          <span v-else>每行一个 Token，格式：<code>refresh_token 备注(可选)</code></span>
+          <span v-if="importMode === 'password'">{{ t.batchImport.formatPassword }}<code>{{ t.batchImport.formatExample }}</code></span>
+          <span v-else>{{ t.batchImport.formatToken }}<code>{{ t.batchImport.tokenExample }}</code></span>
         </template>
       </el-alert>
 
       <!-- 输入区域 -->
       <div class="input-section">
         <div class="section-header">
-          <span class="section-title">{{ importMode === 'password' ? '账号数据' : 'Refresh Token 列表' }}</span>
+          <span class="section-title">{{ importMode === 'password' ? t.batchImport.accountData : t.batchImport.tokenList }}</span>
           <el-button type="primary" link @click="handleFileImport">
             <el-icon><Upload /></el-icon>
-            从文件导入
+            {{ t.batchImport.importFromFile }}
           </el-button>
         </div>
         <el-input
@@ -43,8 +43,8 @@
           type="textarea"
           :rows="12"
           :placeholder="importMode === 'password' 
-            ? 'user1@example.com password123 测试账号1\nuser2@example.com password456\nuser3@example.com password789 备注信息'
-            : 'AMf-vBx...长token... 测试账号1\nAMf-vBy...长token...\nAMf-vBz...长token... 备注信息'"
+            ? t.batchImport.passwordPlaceholder
+            : t.batchImport.tokenPlaceholder"
           @input="parseAccounts"
         />
         <input
@@ -59,11 +59,11 @@
       <!-- 解析预览 -->
       <div class="preview-section" v-if="inputText.trim()">
         <div class="section-header">
-          <span class="section-title">解析预览</span>
+          <span class="section-title">{{ t.batchImport.parsePreview }}</span>
           <div class="stats">
-            <el-tag type="success" size="small">有效: {{ validAccounts.length }}</el-tag>
+            <el-tag type="success" size="small">{{ t.batchImport.valid }}: {{ validAccounts.length }}</el-tag>
             <el-tag v-if="invalidLines.length > 0" type="danger" size="small">
-              无效: {{ invalidLines.length }}
+              {{ t.batchImport.invalid }}: {{ invalidLines.length }}
             </el-tag>
           </div>
         </div>
@@ -76,20 +76,20 @@
           max-height="200"
           stripe
         >
-          <el-table-column prop="email" label="邮箱" min-width="180" />
-          <el-table-column prop="password" label="密码" width="120">
+          <el-table-column :prop="'email'" :label="t.batchImport.email" min-width="180" />
+          <el-table-column :prop="'password'" :label="t.batchImport.password" width="120">
             <template #default="{ row }">
               <span class="password-mask">{{ maskPassword(row.password) }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" min-width="100">
+          <el-table-column :prop="'remark'" :label="t.batchImport.remark" min-width="100">
             <template #default="{ row }">
               <span class="remark-text">{{ row.remark || '-' }}</span>
             </template>
           </el-table-column>
         </el-table>
         <div v-if="validAccounts.length > 10" class="more-hint">
-          ... 还有 {{ validAccounts.length - 10 }} 个账号
+          ... {{ t.batchImport.thereAre }} {{ validAccounts.length - 10 }} {{ t.batchImport.accounts }}
         </div>
 
         <!-- 无效行提示 -->
@@ -100,7 +100,7 @@
           style="margin-top: 12px;"
         >
           <template #title>
-            格式错误的行: {{ invalidLines.slice(0, 5).join(', ') }}
+            {{ t.batchImport.formatError }} {{ invalidLines.slice(0, 5).join(', ') }}
             <span v-if="invalidLines.length > 5">... 等 {{ invalidLines.length }} 行</span>
           </template>
         </el-alert>
@@ -109,15 +109,15 @@
       <!-- 导入设置 -->
       <div class="settings-section">
         <div class="section-header">
-          <span class="section-title">导入设置</span>
+          <span class="section-title">{{ t.batchImport.importSettings }}</span>
         </div>
         <div class="settings-content">
           <!-- 分组选择 -->
           <div class="setting-item">
-            <span class="setting-label">分组:</span>
+            <span class="setting-label">{{ t.batchImport.group }}</span>
             <el-select
               v-model="selectedGroup"
-              placeholder="选择分组（可选）"
+              :placeholder="t.batchImport.selectGroup"
               clearable
               style="width: 180px;"
             >
@@ -128,18 +128,18 @@
                 :value="group"
               />
             </el-select>
-            <span class="setting-hint">留空则使用默认分组</span>
+            <span class="setting-hint">{{ t.batchImport.leaveBlankDefaultGroup }}</span>
           </div>
           
           <!-- 标签选择 -->
           <div class="setting-item">
-            <span class="setting-label">标签:</span>
+            <span class="setting-label">{{ t.batchImport.tags }}</span>
             <el-select
               v-model="selectedTags"
               multiple
               collapse-tags
               collapse-tags-tooltip
-              placeholder="选择标签（可选）"
+              :placeholder="t.batchImport.selectTags"
               clearable
               style="width: 180px;"
             >
@@ -152,18 +152,18 @@
                 <span :style="{ color: tag.color }">{{ tag.name }}</span>
               </el-option>
             </el-select>
-            <span class="setting-hint">留空则不添加标签</span>
+            <span class="setting-hint">{{ t.batchImport.leaveBlankNoTags }}</span>
           </div>
           
           <div class="setting-item">
-            <span class="setting-label">并发模式:</span>
+            <span class="setting-label">{{ t.batchImport.concurrencyMode }}</span>
             <el-tag :type="unlimitedConcurrent ? 'danger' : 'primary'" size="small">
-              {{ unlimitedConcurrent ? '全量并发' : `限制并发 (${concurrencyLimit})` }}
+              {{ unlimitedConcurrent ? t.batchImport.fullConcurrency : `${t.batchImport.limitedConcurrency} (${concurrencyLimit})` }}
             </el-tag>
-            <span class="setting-hint">可在设置中修改</span>
+            <span class="setting-hint">{{ t.batchImport.canModifyInSettings }}</span>
           </div>
           <div class="setting-item">
-            <el-checkbox v-model="autoLogin">导入后自动登录</el-checkbox>
+            <el-checkbox v-model="autoLogin">{{ t.batchImport.autoLoginAfterImport }}</el-checkbox>
           </div>
         </div>
       </div>
@@ -171,14 +171,14 @@
 
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="handleClose">取消</el-button>
+        <el-button @click="handleClose">{{ t.common.cancel }}</el-button>
         <el-button
           type="primary"
           :disabled="validAccounts.length === 0"
           :loading="importing"
           @click="handleImport"
         >
-          {{ importing ? '导入中...' : `导入 ${validAccounts.length} 个账号` }}
+          {{ importing ? t.batchImport.importing : `${t.common.import} ${validAccounts.length} ${t.batchImport.accounts}` }}
         </el-button>
       </div>
     </template>
@@ -306,7 +306,7 @@ function handleFileSelected(event: Event) {
 function handleImport() {
   if (validAccounts.value.length === 0) return;
   importing.value = true;
-  emit('import', [...validAccounts.value], autoLogin.value, selectedGroup.value || '默认分组', [...selectedTags.value], importMode.value);
+  emit('import', [...validAccounts.value], autoLogin.value, selectedGroup.value || t.value.batchImport.defaultGroup, [...selectedTags.value], importMode.value);
 }
 
 // 关闭对话框

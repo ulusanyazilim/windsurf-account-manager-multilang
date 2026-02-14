@@ -4,7 +4,7 @@ import trTR from './tr-TR';
 
 export type Locale = 'zh-CN' | 'en-US' | 'tr-TR';
 
-export const messages = {
+export const messages: Record<Locale, typeof zhCN> = {
     'zh-CN': zhCN,
     'en-US': enUS,
     'tr-TR': trTR,

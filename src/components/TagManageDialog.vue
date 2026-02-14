@@ -11,7 +11,7 @@
       <div class="add-tag-section">
         <el-input
           v-model="newTagName"
-          placeholder="输入新标签名称"
+          :placeholder="t.tags.inputPlaceholder"
           size="default"
           class="tag-input"
           @keyup.enter="handleAddTag"
@@ -26,7 +26,7 @@
           </template>
           <template #append>
             <el-button :icon="Plus" @click="handleAddTag" :loading="adding">
-              添加
+              {{ t.common.add }}
             </el-button>
           </template>
         </el-input>
@@ -35,11 +35,11 @@
       <!-- 标签列表 -->
       <div class="tags-section">
         <div class="section-header">
-          <span class="section-title">全局标签 ({{ settingsStore.tags.length }})</span>
+          <span class="section-title">{{ t.tags.globalTags }} ({{ settingsStore.tags.length }})</span>
         </div>
         
         <div v-if="settingsStore.tags.length === 0" class="empty-hint">
-          暂无标签，请添加新标签
+          {{ t.tags.noTags }}
         </div>
 
         <el-scrollbar max-height="300px">
@@ -57,7 +57,7 @@
                   {{ tag.name }}
                 </span>
                 <span class="tag-usage">
-                  使用: {{ getTagUsageCount(tag.name) }} 个账号
+                  {{ t.tags.usage }} {{ getTagUsageCount(tag.name) }} {{ t.batchImport.accounts }}
                 </span>
               </div>
               <div class="tag-actions">
@@ -90,16 +90,16 @@
       <!-- 批量操作区域 -->
       <div class="batch-section" v-if="selectedAccountIds.length > 0">
         <div class="section-header">
-          <span class="section-title">批量操作 (已选 {{ selectedAccountIds.length }} 个账号)</span>
+          <span class="section-title">{{ t.tags.batchOperations }} ({{ t.tags.selected }} {{ selectedAccountIds.length }} {{ t.batchImport.accounts }})</span>
         </div>
         
         <div class="batch-content">
           <div class="batch-row">
-            <span class="batch-label">添加标签:</span>
+            <span class="batch-label">{{ t.tags.addTagsLabel }}</span>
             <el-select
               v-model="batchAddTags"
               multiple
-              placeholder="选择要添加的标签"
+              :placeholder="t.tags.addTagsPlaceholder"
               style="flex: 1"
               :disabled="availableTagsToAdd.length === 0"
             >
@@ -114,11 +114,11 @@
             </el-select>
           </div>
           <div class="batch-row">
-            <span class="batch-label">移除标签:</span>
+            <span class="batch-label">{{ t.tags.removeTagsLabel }}</span>
             <el-select
               v-model="batchRemoveTags"
               multiple
-              placeholder="选择要移除的标签"
+              :placeholder="t.tags.removeTagsPlaceholder"
               style="flex: 1"
               :disabled="availableTagsToRemove.length === 0"
             >
@@ -138,7 +138,7 @@
             :loading="batchUpdating"
             :disabled="batchAddTags.length === 0 && batchRemoveTags.length === 0"
           >
-            应用批量修改
+            {{ t.tags.applyBatchBtn }}
           </el-button>
         </div>
       </div>
@@ -147,15 +147,15 @@
     <!-- 编辑标签对话框 -->
     <el-dialog
       v-model="editDialogVisible"
-      title="编辑标签"
+      :title="t.tags.editTitle"
       width="400px"
       append-to-body
     >
-      <el-form :model="editForm" label-width="80px">
-        <el-form-item label="标签名称">
+      <el-form :model="editForm" :label-width="80">
+        <el-form-item :label="t.tags.editLabel">
           <el-input v-model="editForm.name" />
         </el-form-item>
-        <el-form-item label="标签颜色">
+        <el-form-item :label="t.tags.editColorLabel">
           <el-color-picker
             v-model="editForm.color"
             show-alpha
@@ -164,15 +164,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button @click="editDialogVisible = false">{{ t.tags.cancelBtn }}</el-button>
         <el-button type="primary" @click="handleUpdateTag" :loading="updating">
-          保存
+          {{ t.tags.saveBtn }}
         </el-button>
       </template>
     </el-dialog>
 
     <template #footer>
-      <el-button @click="handleClose">关闭</el-button>
+      <el-button @click="handleClose">{{ t.tags.closeBtn }}</el-button>
     </template>
   </el-dialog>
 </template>
@@ -340,12 +340,12 @@ function getTagUsageCount(tagName: string): number {
 async function handleAddTag() {
   const name = newTagName.value.trim();
   if (!name) {
-    ElMessage.warning('请输入标签名称');
+    ElMessage.warning(t.value.tags.inputPlaceholder);
     return;
   }
   
   if (settingsStore.tags.some(t => t.name === name)) {
-    ElMessage.warning('标签已存在');
+    ElMessage.warning(t.value.tags.tagExists);
     return;
   }
   
@@ -355,10 +355,10 @@ async function handleAddTag() {
       name,
       color: newTagColor.value
     });
-    ElMessage.success('标签添加成功');
+    ElMessage.success(t.value.tags.addSuccess);
     newTagName.value = '';
   } catch (e) {
-    ElMessage.error(`添加失败: ${e}`);
+    ElMessage.error(`${t.value.tags.addFailed}: ${e}`);
   } finally {
     adding.value = false;
   }
@@ -381,9 +381,9 @@ async function handleUpdateColor(tagName: string, color: string | null) {
       name: tagName,
       color
     });
-    ElMessage.success('颜色更新成功');
+    ElMessage.success(t.value.common.success);
   } catch (e) {
-    ElMessage.error(`更新失败: ${e}`);
+    ElMessage.error(`${t.value.common.error}: ${e}`);
   }
 }
 
@@ -391,13 +391,13 @@ async function handleUpdateColor(tagName: string, color: string | null) {
 async function handleUpdateTag() {
   const name = editForm.name.trim();
   if (!name) {
-    ElMessage.warning('请输入标签名称');
+    ElMessage.warning(t.value.tags.inputPlaceholder);
     return;
   }
   
   // 如果名称改变，检查是否重复
   if (name !== editForm.originalName && settingsStore.tags.some(t => t.name === name)) {
-    ElMessage.warning('标签名称已存在');
+    ElMessage.warning(t.value.tags.tagExists);
     return;
   }
   
@@ -407,7 +407,7 @@ async function handleUpdateTag() {
       name,
       color: editForm.color
     });
-    ElMessage.success('标签更新成功');
+    ElMessage.success(t.value.common.success);
     editDialogVisible.value = false;
     
     // 如果名称改变，刷新账号列表
@@ -415,7 +415,7 @@ async function handleUpdateTag() {
       emit('refresh');
     }
   } catch (e) {
-    ElMessage.error(`更新失败: ${e}`);
+    ElMessage.error(`${t.value.common.error}: ${e}`);
   } finally {
     updating.value = false;
   }
@@ -425,24 +425,24 @@ async function handleUpdateTag() {
 async function handleDeleteTag(name: string) {
   const usageCount = getTagUsageCount(name);
   
-  let message = `确定要删除标签 "${name}" 吗？`;
+  let message = `${t.value.tags.deleteConfirm} "${name}" ${t.value.common.yes}?`;
   if (usageCount > 0) {
-    message += `\n\n该标签正被 ${usageCount} 个账号使用，删除后这些账号将移除此标签。`;
+    message += `\n\n${t.value.tags.deleteConfirmMsg} ${usageCount} ${t.value.tags.deleteConfirmMsg2}`;
   }
   
   try {
-    await ElMessageBox.confirm(message, '删除确认', {
+    await ElMessageBox.confirm(message, t.value.tags.deleteTitle, {
       type: 'warning',
-      confirmButtonText: '删除',
-      cancelButtonText: '取消'
+      confirmButtonText: t.value.tags.deleteBtn,
+      cancelButtonText: t.value.common.cancel
     });
     
     await settingsStore.deleteTag(name);
-    ElMessage.success('标签删除成功');
+    ElMessage.success(t.value.common.success);
     emit('refresh');
   } catch (e) {
     if (e !== 'cancel') {
-      ElMessage.error(`删除失败: ${e}`);
+      ElMessage.error(`${t.value.common.error}: ${e}`);
     }
   }
 }
@@ -450,7 +450,7 @@ async function handleDeleteTag(name: string) {
 // 批量更新账户标签
 async function handleBatchUpdate() {
   if (batchAddTags.value.length === 0 && batchRemoveTags.value.length === 0) {
-    ElMessage.warning('请选择要添加或移除的标签');
+    ElMessage.warning(t.value.tags.selectTagsWarning);
     return;
   }
   
@@ -461,12 +461,12 @@ async function handleBatchUpdate() {
       batchAddTags.value,
       batchRemoveTags.value
     );
-    ElMessage.success(`批量更新完成: 成功 ${result.success_count} 个`);
+    ElMessage.success(`${t.value.tags.batchUpdateSuccess} ${result.success_count} ${t.value.common.success}`);
     batchAddTags.value = [];
     batchRemoveTags.value = [];
     emit('refresh');
   } catch (e) {
-    ElMessage.error(`批量更新失败: ${e}`);
+    ElMessage.error(`${t.value.tags.batchUpdateFailed}: ${e}`);
   } finally {
     batchUpdating.value = false;
   }

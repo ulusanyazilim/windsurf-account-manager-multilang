@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <el-container class="main-container">
     <!-- 侧边栏 -->
     <el-aside :width="sidebarWidth" class="sidebar" :style="{ overflow: 'hidden' }">
@@ -140,7 +140,7 @@
         </div>
         
         <div class="header-right">
-          <!-- 批量删除 -->
+          <!-- 批量{{ t.common.delete }} -->
           <el-tooltip :content="t.accounts.batchDelete" placement="bottom" v-if="accountsStore.selectedAccounts.size > 0">
             <el-badge :value="accountsStore.selectedAccounts.size" :offset="[12, -8]">
               <el-button
@@ -891,7 +891,7 @@ async function refreshAccounts() {
       const allIds = accountsStore.accounts.map(a => a.id);
       
       const progressLoading = ElMessage({
-        message: `正在批量刷新 ${totalCount} 个账号...`,
+        message: `${t.value.accounts.batchRefreshingAccounts.replace('{count}', String(totalCount))}`,
         duration: 0,
         icon: Loading
       });
@@ -965,20 +965,20 @@ async function refreshAccounts() {
 async function handleBatchDelete() {
   try {
     await ElMessageBox.confirm(
-      `确定要删除选中的 ${accountsStore.selectedAccounts.size} 个账号吗？`,
-      '批量删除确认',
+      `${t.value.accounts.confirmDeleteAccounts.replace('{count}', String(accountsStore.selectedAccounts.size))}`,
+      t.value.accounts.batchDeleteConfirm,
       {
-        confirmButtonText: '删除',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.common.delete,
+        cancelButtonText: t.value.common.cancel,
         type: 'warning',
       }
     );
     
     const result = await accountsStore.deleteSelectedAccounts();
-    ElMessage.success(`成功删除 ${result?.success_count || 0} 个账号`);
+    ElMessage.success(`成功{{ t.common.delete }} ${result?.success_count || 0} 个账号`);
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`批量删除失败: ${error}`);
+      ElMessage.error(`批量{{ t.common.delete }}失败: ${error}`);
     }
   }
 }
@@ -995,11 +995,11 @@ async function handleBatchTransfer() {
   
   try {
     await ElMessageBox.confirm(
-      `确定要将 ${selectedIds.length} 个账户的订阅转让给对应的目标邮箱吗？\n\n转让后源账户将被移出团队，此操作不可撤销！`,
-      '确认批量转让',
+      `${t.value.accounts.confirmBatchTransfer.replace('{count}', String(selectedIds.length))}`,
+      t.value.accounts.confirmBatchTransferTitle,
       {
-        confirmButtonText: '确认转让',
-        cancelButtonText: '取消',
+        confirmButtonText: t.value.accounts.confirmTransfer,
+        cancelButtonText: t.value.common.cancel,
         type: 'warning'
       }
     );
@@ -1060,7 +1060,7 @@ async function handleBatchTransfer() {
   const failedCount = results.filter(r => !r.success).length;
   
   if (failedCount === 0) {
-    ElMessage.success(`批量转让完成！成功: ${successCount}/${selectedIds.length}`);
+    ElMessage.success(t.value.accounts.batchTransferComplete.replace('{success}', String(successCount)).replace('{total}', String(selectedIds.length)));
   } else {
     const failedDetails = results
       .filter(r => !r.success)
@@ -1068,7 +1068,10 @@ async function handleBatchTransfer() {
       .map(r => `${r.sourceEmail}: ${r.error}`)
       .join('\n');
     ElMessage.warning({
-      message: `批量转让完成\n成功: ${successCount}, 失败: ${failedCount}\n\n失败详情:\n${failedDetails}`,
+      message: t.value.accounts.batchTransferPartialComplete
+        .replace('{success}', String(successCount))
+        .replace('{failed}', String(failedCount))
+        .replace('{details}', failedDetails),
       duration: 5000,
       showClose: true
     });
@@ -1329,7 +1332,7 @@ async function handleBatchImportConfirm(
     progressMsg.close();
     showBatchImportDialog.value = false;
     batchImportDialogRef.value?.resetImporting();
-    ElMessage.error(`批量导入失败: ${error}`);
+    ElMessage.error(t.value.accounts.batchImportFailed.replace('{error}', String(error)));
   }
 }
 
@@ -1999,7 +2002,7 @@ onUnmounted(() => {
   box-shadow: 0 2px 6px rgba(64, 158, 255, 0.2);
 }
 
-/* 危险按钮 - 红色（批量删除） */
+/* 危险按钮 - 红色（批量{{ t.common.delete }}） */
 .header-right :deep(.el-button--danger.is-circle) {
   background: linear-gradient(135deg, #f56c6c 0%, #f04848 100%);
   border: none;
@@ -2624,3 +2627,4 @@ onUnmounted(() => {
 }
 
 </style>
+
